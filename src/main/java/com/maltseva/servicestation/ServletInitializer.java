@@ -1,6 +1,5 @@
 package com.maltseva.servicestation;
 
-import com.maltseva.servicestation.ServiceStationApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
