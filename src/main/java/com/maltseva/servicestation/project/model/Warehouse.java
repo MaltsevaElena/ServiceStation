@@ -1,12 +1,13 @@
 package com.maltseva.servicestation.project.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -16,7 +17,7 @@ import java.io.Serial;
  *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 @Entity
@@ -24,6 +25,8 @@ import java.io.Serial;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name = "default_gen", sequenceName = "warehouses_seq", allocationSize = 1)
 public class Warehouse extends GenericModel{
 
@@ -31,13 +34,21 @@ public class Warehouse extends GenericModel{
     private static final long serialVersionUID = 4402329028629712473L;
 
     @Column(name = "name", nullable = false, unique = true)
-    String name;
+    private String name;
 
     @Column(name = "service_station_id", insertable = false, updatable = false, nullable = false)
-    Integer serviceStationID;
+    private Long serviceStationID;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_station_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_WAREHOUSES_SERVICE_STATIONS"), nullable = false)
     @ToString.Exclude
+    @JsonIgnore
     private ServiceStation serviceStation;
 
+
+    @OneToMany(mappedBy = "warehouse",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<SparePart> sparePartSet = new HashSet<>();
 }

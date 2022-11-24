@@ -1,12 +1,13 @@
 package com.maltseva.servicestation.project.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The user class is associated:
@@ -18,7 +19,7 @@ import java.time.LocalDate;
  *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 
@@ -27,6 +28,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name = "default_gen", sequenceName = "users_seq", allocationSize = 1)
 public class User extends GenericModel {
 
@@ -42,13 +45,13 @@ public class User extends GenericModel {
     @Column(name = "middle_name")
     private String middleName;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     private String address;
 
     @Column(name = "date_birth", nullable = false)
     private LocalDate dateBirth;
 
-    @Column(name = "back_up_email")
+    @Column(name = "back_up_email", nullable = false)
     private String backupEmail;
 
     @Column(name = "login", nullable = false)
@@ -61,10 +64,27 @@ public class User extends GenericModel {
     private String phone;
 
     @Column(name = "role_id", insertable = false, updatable = false, nullable = false)
-    Integer roleID;
+    private Long roleID;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_USERS_ROLES"), nullable = false)
     @ToString.Exclude
+    @JsonIgnore
     private Role role;
 
+    //Машина может существовать без пользователя
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Car> carSet = new HashSet<>();
+
+    //Перед удаление пользователя обнуляем информацию у автомобиля(автомобиль не удаляем)
+    //OnDeleteSetNull in DB for foreign key
+    @PreRemove
+    private void preRemove() {
+        for (Car car : carSet) {
+            car.setUser(null);
+        }
+    }
 }

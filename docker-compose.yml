@@ -1,8 +1,8 @@
 version: "3.9"
 services:
   postgres:
-    container_name: dbConverterPostgres
-    image: DB_ServiceStation
+    container_name: dbPostgres
+    image: postgres
     environment:
       POSTGRES_DB: "DB_ServiceStation"
       POSTGRES_USER: "postgres"

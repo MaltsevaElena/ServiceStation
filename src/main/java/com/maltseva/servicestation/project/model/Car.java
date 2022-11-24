@@ -1,9 +1,8 @@
 package com.maltseva.servicestation.project.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
@@ -11,11 +10,9 @@ import java.io.Serial;
 /**
  * The car class is associated with the user by a many-to-one relationship
  *
- * a car cannot exist without a user, so we use the CascadeType.ALL
- *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 
@@ -24,6 +21,8 @@ import java.io.Serial;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name = "default_gen", sequenceName = "cars_seq", allocationSize = 1)
 public class Car extends GenericModel{
 
@@ -48,12 +47,17 @@ public class Car extends GenericModel{
     @Column(name = "year", nullable = false)
     private Integer year;
 
-    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "user_id", unique = true, insertable = false, updatable = false)
     private Long userId;
 
-    //a car cannot exist without a user, so we use the CascadeType.ALL
-    @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    /*Машина может существовать без пользователя,
+    и может быть передана другому пользователю.
+    Поэтому каскада нет*/
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_CARS_USERS"))
     @ToString.Exclude
+    @JsonIgnore
     private User user;
 
 }

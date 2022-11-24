@@ -1,22 +1,20 @@
 package com.maltseva.servicestation.project.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
 
 /**
- * The spare part class is associated:
- * many-to-one with class unit
+ * The spare part class is associated
  * many-to-one with class warehouse
  *
  *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 
@@ -25,35 +23,37 @@ import java.io.Serial;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @SequenceGenerator(name = "default_gen", sequenceName = "spare_parts_seq", allocationSize = 1)
 public class SparePart extends GenericModel{
 
     @Serial
     private static final long serialVersionUID = -2881262656264828955L;
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "code", nullable = false, unique = true)
-    String code;
+    private String code;
 
     @Column(name = "price", nullable = false)
-    Double price;
+    private Double price;
 
     @Column(name = "amount", nullable = false)
-    Integer amount;
+    private Integer amount;
+
+    @Column(name = "unit")
+    @Enumerated
+    private Unit unit;
 
     @Column(name = "warehouse_id", insertable = false, updatable = false, nullable = false)
-    Integer warehouseStationID;
+    private Long warehouseID;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_WAREHOUSES_SPARE_PARTS"), nullable = false)
     @ToString.Exclude
+    @JsonIgnore
     private Warehouse warehouse;
-
-    @Column(name = "unit_id", insertable = false, updatable = false, nullable = false)
-    Integer unitID;
-
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Unit unit;
 
 }

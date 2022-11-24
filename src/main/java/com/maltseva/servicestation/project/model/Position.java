@@ -1,21 +1,18 @@
 package com.maltseva.servicestation.project.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import java.io.Serial;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The position class is associated with the user by a one-to-many relationship
  *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 @Entity
@@ -23,16 +20,24 @@ import java.io.Serial;
 @Getter
 @Setter
 @ToString
-@SequenceGenerator(name = "default_gen", sequenceName = "positions_seq", allocationSize = 1)
-public class Position extends GenericModel {
-
-    @Serial
-    private static final long serialVersionUID = -655041077487360403L;
+@NoArgsConstructor
+@AllArgsConstructor
+public class Position {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "title", nullable = false)
     private String title;
+
+    //Каскада нет, потому что мы не удаляем должность
+    @OneToMany(mappedBy = "position", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Employee> employeeSet = new HashSet<>();
 
 }

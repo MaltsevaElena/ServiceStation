@@ -1,15 +1,13 @@
 package com.maltseva.servicestation.project.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serial;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The service station class is associated:
@@ -20,7 +18,7 @@ import java.io.Serial;
  *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 
@@ -29,6 +27,8 @@ import java.io.Serial;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @SequenceGenerator(name = "default_gen", sequenceName = "service_station_seq", allocationSize = 1)
 public class ServiceStation extends GenericModel{
 
@@ -44,5 +44,24 @@ public class ServiceStation extends GenericModel{
     //let's say there is only one phone
     @Column(name = "phone", nullable = false)
     private String phone;
+
+
+    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Employee> employeeSet = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Service> serviceSet = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Warehouse> warehouseSet = new HashSet<>();
+
 
 }

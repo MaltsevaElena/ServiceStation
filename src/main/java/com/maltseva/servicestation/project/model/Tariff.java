@@ -1,22 +1,20 @@
 package com.maltseva.servicestation.project.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serial;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The tariff class is associated with the service by a one-to-many relationship
  *
  * @author Maltseva
  * @version 1.0
- * @since 05.11.2022
+ * @since 25.11.2022
  */
 
 @Entity
@@ -24,6 +22,8 @@ import java.io.Serial;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name = "default_gen", sequenceName = "tariff_seq", allocationSize = 1)
 public class Tariff extends GenericModel{
 
@@ -31,8 +31,15 @@ public class Tariff extends GenericModel{
     private static final long serialVersionUID = -1795888884515957010L;
 
     @Column(name = "name", nullable = false, unique = true)
-    String name;
+    private String name;
 
     @Column(name = "rate_hour", nullable = false)
-    Long rateHour;
+    private Integer rateHour;
+
+    //При удалении услуги, тариф не удаляется
+    @OneToMany(mappedBy = "tariff",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Service> serviceSet = new HashSet<>();
+
 }
