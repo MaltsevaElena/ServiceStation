@@ -49,7 +49,7 @@ public class ServiceStation extends GenericModel{
     @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JsonIgnore
     @ToString.Exclude
-    private Set<Employee> employeeSet = new HashSet<>();
+    private Set<User> employeeSet = new HashSet<>();
 
 
     @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)

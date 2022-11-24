@@ -87,4 +87,38 @@ public class User extends GenericModel {
             car.setUser(null);
         }
     }
+
+    //--поля для сотрудника--
+    //будут null для не сотрудника СТО
+
+    @Column(name = "position")
+    @Enumerated
+    private Position position;
+
+    @Column(name = "service_station_id", insertable = false, updatable = false)
+    private Long serviceStationID;
+
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_station_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_EMPLOYEES_SERVICE_STATIONS"))
+    @ToString.Exclude
+    @JsonIgnore
+    private ServiceStation serviceStation;
+
+    @Column(name = "employee_chief_id", insertable = false, updatable = false)
+    private Long employeeChiefID;
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_chief_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_USERS_USERS"))
+    @ToString.Exclude
+    @JsonIgnore
+    private User chief;
+
+    @OneToMany(mappedBy = "chief", cascade = {CascadeType.MERGE, CascadeType.PERSIST},fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<User> employeeSet = new HashSet<>();
+
 }
