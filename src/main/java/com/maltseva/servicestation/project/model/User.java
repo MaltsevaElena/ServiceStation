@@ -91,13 +91,18 @@ public class User extends GenericModel {
     //--поля для сотрудника--
     //будут null для не сотрудника СТО
 
-    @Column(name = "position")
-    @Enumerated
+    @Column(name = "position_id", insertable = false, updatable = false)
+    private Long positionID;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "position_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK_USERS_POSITIONS"))
+    @ToString.Exclude
+    @JsonIgnore
     private Position position;
 
     @Column(name = "service_station_id", insertable = false, updatable = false)
     private Long serviceStationID;
-
 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "service_station_id", referencedColumnName = "id",

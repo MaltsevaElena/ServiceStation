@@ -38,7 +38,7 @@ public class Car extends GenericModel{
     @Column(name = "vin", nullable = false, unique = true)
     private String vin;
 
-    @Column(name = "owner_car", nullable = false)
+    @Column(name = "owner_car")
     private String ownerCar;
 
     @Column(name = "mileage", nullable = false)
@@ -47,7 +47,7 @@ public class Car extends GenericModel{
     @Column(name = "year", nullable = false)
     private Integer year;
 
-    @Column(name = "user_id", unique = true, insertable = false, updatable = false)
+    @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
 
     /*Машина может существовать без пользователя,

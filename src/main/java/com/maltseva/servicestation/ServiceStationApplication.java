@@ -1,5 +1,6 @@
 package com.maltseva.servicestation;
 
+import com.maltseva.servicestation.project.model.Unit;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +22,7 @@ public class ServiceStationApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
+        System.out.println(Unit.PIECES.ordinal());
     }
 
 }

@@ -9,7 +9,6 @@ import java.io.Serial;
 
 /**
  * The service class is associated:
- * many-to-one with the tariff
  * many-to-one with the service_station
  *
  * @author Maltseva
@@ -37,15 +36,8 @@ public class Service extends GenericModel{
     @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @Column(name = "tariff_id", insertable = false, updatable = false, nullable = false)
-    private Long tariffID;
-
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "tariff_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "FK_SERVICES_TARIFFS"), nullable = false)
-    @ToString.Exclude
-    @JsonIgnore
-    private Tariff tariff;
+    @Column(name = "rate_hour", nullable = false)
+    private Double rateHour;
 
     @Column(name = "service_station_id", insertable = false, updatable = false, nullable = false)
     private Long serviceStationID;
@@ -56,6 +48,5 @@ public class Service extends GenericModel{
     @ToString.Exclude
     @JsonIgnore
     private ServiceStation serviceStation;
-
 
 }
