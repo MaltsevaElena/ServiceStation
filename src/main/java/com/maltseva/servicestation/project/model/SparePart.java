@@ -19,7 +19,7 @@ import java.io.Serial;
 
 
 @Entity
-@Table(name = "spare_parts")
+@Table(name = "spare_parts", uniqueConstraints = {@UniqueConstraint(name = "Unique_code_spare_part", columnNames = "code")})
 @Getter
 @Setter
 @ToString

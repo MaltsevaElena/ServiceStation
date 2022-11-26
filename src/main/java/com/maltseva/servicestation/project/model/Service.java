@@ -18,7 +18,8 @@ import java.io.Serial;
 
 
 @Entity
-@Table(name = "services")
+@Table(name = "services", uniqueConstraints = {@UniqueConstraint(name = "Unique_name_service", columnNames = "name"),
+@UniqueConstraint(name = "unique_code_service",columnNames = "code")})
 @Getter
 @Setter
 @ToString

@@ -21,7 +21,7 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "warehouses")
+@Table(name = "warehouses", uniqueConstraints = {@UniqueConstraint(name = "Unique_name_warehouse", columnNames = "name")})
 @Getter
 @Setter
 @ToString

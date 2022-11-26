@@ -17,7 +17,7 @@ import java.io.Serial;
 
 
 @Entity
-@Table(name = "cars")
+@Table(name = "cars", uniqueConstraints = {@UniqueConstraint(name = "Unique_VIN_car", columnNames = "vin")})
 @Getter
 @Setter
 @ToString

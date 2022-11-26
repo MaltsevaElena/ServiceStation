@@ -14,7 +14,7 @@ import java.util.Set;
  * one-to-mane with class service
  * one-to-many with class warehouse
  * one-to-many with class employee
- *
+ * one-to-many with class tariff
  *
  * @author Maltseva
  * @version 1.0
@@ -62,6 +62,11 @@ public class ServiceStation extends GenericModel{
     @JsonIgnore
     @ToString.Exclude
     private Set<Warehouse> warehouseSet = new HashSet<>();
+
+    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    private Set<Tariff> tariffSet = new HashSet<>();
 
 
 }
