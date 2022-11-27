@@ -21,6 +21,7 @@ public class SparePartDTO extends CommonDTO {
     private Double price;
     private Integer amount;
     private Unit unit;
+    private Long warehouseId;
 
 
 }

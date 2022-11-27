@@ -18,5 +18,6 @@ public class ServiceDTO extends CommonDTO {
     private String name;
     private String code;
     private Double rateHour;
+    private Long serviceStationId;
 
 }

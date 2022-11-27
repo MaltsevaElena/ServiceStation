@@ -19,4 +19,5 @@ public class TariffDTO extends CommonDTO {
     private Integer price;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Long serviceStationId;
 }

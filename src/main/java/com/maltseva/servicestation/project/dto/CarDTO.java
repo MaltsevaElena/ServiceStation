@@ -25,4 +25,5 @@ public class CarDTO extends CommonDTO{
     private String ownerCar;
     private Integer mileage;
     private Integer year;
+    private Long userId;
 }

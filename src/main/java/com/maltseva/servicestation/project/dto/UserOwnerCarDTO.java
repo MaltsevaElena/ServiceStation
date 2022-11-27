@@ -4,21 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-/**
- *
- * @author Maltseva
- * @version 1.0
- * @since 27.11.2022
- */
+
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+public class UserOwnerCarDTO extends UserDTO {
 
-public class UserAuthorizationDTO extends UserDTO {
-
-    private String backupEmail;
-    private String login;
-    private String password;
-
+    private Set<Long> carSet;
 }

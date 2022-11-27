@@ -1,13 +1,7 @@
 package com.maltseva.servicestation.project.dto;
 
-
-import com.maltseva.servicestation.project.model.Service;
-import com.maltseva.servicestation.project.model.Tariff;
-import com.maltseva.servicestation.project.model.User;
-import com.maltseva.servicestation.project.model.Warehouse;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 /**
  *
@@ -22,10 +16,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class ServiceStationEmployeeWarehouseServiceDTO extends ServiceStationDTO {
     //TODO: нужно ли разделить на отдельные ДТО??
-    private Set<User> employeeSet = new HashSet<>();
-    private Set<Warehouse> warehouseSet = new HashSet<>();
-    private Set<Service> serviceSet = new HashSet<>();
-    private Set<Tariff> tariffSet = new HashSet<>();
-
-
+    private Set<Long> employeeSet;
+    private Set<Long> warehouseSet;
+    private Set<Long> serviceSet;
+    private Set<Long> tariffSet;
 }

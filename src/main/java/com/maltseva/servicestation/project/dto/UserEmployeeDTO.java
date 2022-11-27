@@ -21,6 +21,6 @@ public class UserEmployeeDTO extends UserDTO{
     private Long positionID;
     private Long serviceStationID;
     private Long employeeChiefID;
-    private Set<UserDTO> employeeSet;
+    private Set<Long> employeeSet;
 
 }

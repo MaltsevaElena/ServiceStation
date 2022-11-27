@@ -1,9 +1,7 @@
 package com.maltseva.servicestation.project.dto;
 
-import com.maltseva.servicestation.project.model.SparePart;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 /**
  *
@@ -21,5 +19,5 @@ public class WarehouseDTO extends CommonDTO {
     private Long id;
     private String name;
     private Long serviceStationID;
-    private Set<SparePart> sparePartSet = new HashSet<>();
+    private Set<Long> sparePartSet;
 }
