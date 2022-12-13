@@ -3,21 +3,23 @@ package com.maltseva.servicestation.project.service;
 import com.maltseva.servicestation.project.dto.PositionDTO;
 import com.maltseva.servicestation.project.model.Position;
 import com.maltseva.servicestation.project.repository.PositionRepository;
-import com.maltseva.servicestation.project.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
 
+/**
+ * @author Maltseva
+ * @version 1.0
+ * @since 13.12.2022
+ */
 @Service
 public class PositionService extends GenericService<Position, PositionDTO> {
 
     private final PositionRepository positionRepository;
-    private final UserRepository userRepository;
 
-    public PositionService(PositionRepository positionRepository, UserRepository userRepository) {
+    public PositionService(PositionRepository positionRepository) {
         this.positionRepository = positionRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class PositionService extends GenericService<Position, PositionDTO> {
 
     public void updateFromPositionDTO(PositionDTO object, Position position) {
         position.setDescription(object.getDescription());
-        position.setTitle(object.getTitle());
+        position.setName(object.getName());
     }
 
     @Override
@@ -59,6 +61,6 @@ public class PositionService extends GenericService<Position, PositionDTO> {
 
     @Override
     public List<Position> listAll() {
-        return positionRepository.findAll();
+        return positionRepository.allPosition();
     }
 }

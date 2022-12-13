@@ -4,10 +4,9 @@ import lombok.*;
 
 import java.util.Set;
 /**
- *
  * @author Maltseva
  * @version 1.0
- * @since 27.11.2022
+ * @since 13.12.2022
  */
 
 @Getter
@@ -18,6 +17,6 @@ public class WarehouseDTO extends CommonDTO {
 
     private Long id;
     private String name;
-    private Long serviceStationID;
-    private Set<Long> sparePartSet;
+    private Long serviceStationId;
+
 }

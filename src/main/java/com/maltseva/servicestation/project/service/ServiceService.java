@@ -8,7 +8,11 @@ import com.maltseva.servicestation.project.repository.ServiceStationRepository;
 import org.webjars.NotFoundException;
 
 import java.util.List;
-
+/**
+ * @author Maltseva
+ * @version 1.0
+ * @since 13.12.2022
+ */
 @org.springframework.stereotype.Service
 public class ServiceService extends GenericService<Service, ServiceDTO> {
 
@@ -33,14 +37,13 @@ public class ServiceService extends GenericService<Service, ServiceDTO> {
         return serviceRepository.save(service);
     }
 
-    public void updateFromServiceDTO(ServiceDTO object, Service service) {
+    private void updateFromServiceDTO(ServiceDTO object, Service service) {
         service.setName(object.getName());
         service.setCode(object.getCode());
         service.setRateHour(object.getRateHour());
         ServiceStation serviceStation = serviceStationRepository.findById(object.getServiceStationId()).orElseThrow(
                 () -> new NotFoundException("Service station with such id = " + object.getServiceStationId() + " not found"));
         service.setServiceStation(serviceStation);
-        service.setServiceStationID(object.getServiceStationId());
     }
 
     @Override

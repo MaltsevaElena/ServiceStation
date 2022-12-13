@@ -1,23 +1,28 @@
 package com.maltseva.servicestation.project.service;
 
-import com.maltseva.servicestation.project.dto.UserAuthorizationDTO;
-import com.maltseva.servicestation.project.dto.UserDTO;
-import com.maltseva.servicestation.project.dto.UserEmployeeDTO;
-import com.maltseva.servicestation.project.dto.UserOwnerCarDTO;
+import com.maltseva.servicestation.project.dto.*;
 import com.maltseva.servicestation.project.model.Car;
+import com.maltseva.servicestation.project.model.Position;
 import com.maltseva.servicestation.project.model.ServiceStation;
 import com.maltseva.servicestation.project.model.User;
 import com.maltseva.servicestation.project.repository.CarRepository;
+import com.maltseva.servicestation.project.repository.PositionRepository;
 import com.maltseva.servicestation.project.repository.ServiceStationRepository;
 import com.maltseva.servicestation.project.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author Maltseva
+ * @version 1.0
+ * @since 13.12.2022
+ */
 @Service
 public class UserService extends GenericService<User, UserDTO> {
 
@@ -25,10 +30,14 @@ public class UserService extends GenericService<User, UserDTO> {
     private final ServiceStationRepository serviceStationRepository;
     private final CarRepository carRepository;
 
-    public UserService(UserRepository userRepository, CarRepository carRepository, ServiceStationRepository serviceStationRepository) {
+    private final PositionRepository positionRepository;
+
+    public UserService(UserRepository userRepository, CarRepository carRepository,
+                       ServiceStationRepository serviceStationRepository, PositionRepository positionRepository) {
         this.userRepository = userRepository;
         this.carRepository = carRepository;
         this.serviceStationRepository = serviceStationRepository;
+        this.positionRepository = positionRepository;
     }
 
     @Override
@@ -55,40 +64,38 @@ public class UserService extends GenericService<User, UserDTO> {
         return userRepository.save(user);
     }
 
-    public void updateFromUserDTO(UserDTO object, User user) {
+    private void updateFromUserDTO(UserDTO object, User user) {
         user.setLastName(object.getLastName());
         user.setFirstName(object.getFirstName());
         user.setMiddleName(object.getMiddleName());
         user.setAddress(object.getAddress());
         user.setDateBirth(object.getDateBirth());
+
     }
 
-    public void updateFromUserOwnerCarDTO(UserDTO object, User user) {
+    private void updateFromUserOwnerCarDTO(UserDTO object, User user) {
         Set<Car> carSet = new HashSet<>(carRepository.findAllById(((UserOwnerCarDTO) object).getCarSet()));
         user.setCarSet(carSet);
     }
 
-
-    public void updateFromUserEmployeeDTO(UserDTO object, User user) {
-        user.setPositionID(((UserEmployeeDTO) object).getPositionID());
+    private void updateFromUserEmployeeDTO(UserDTO object, User user) {
+        Position position = positionRepository.findById(((UserEmployeeDTO) object).getPositionID()).orElseThrow(
+                () -> new NotFoundException("Position with such id = " + ((UserEmployeeDTO) object).getPositionID() + " not found")
+        );
+        user.setPosition(position);
 
         ServiceStation serviceStation = serviceStationRepository.findById(((UserEmployeeDTO) object).getServiceStationID()).orElseThrow(
                 () -> new NotFoundException("ServiceStation with such id = " + ((UserEmployeeDTO) object).getServiceStationID() + " not found"));
-        user.setServiceStationID(((UserEmployeeDTO) object).getServiceStationID());
         user.setServiceStation(serviceStation);
 
         User employeeChief = userRepository.findById(((UserEmployeeDTO) object).getEmployeeChiefID()).orElseThrow(
                 () -> new NotFoundException("User with such id = " + ((UserEmployeeDTO) object).getEmployeeChiefID() + " not found"));
-        user.setEmployeeChiefID(((UserEmployeeDTO) object).getEmployeeChiefID());
         user.setChief(employeeChief);
-
-        Set<User> employeeSet = new HashSet<>(userRepository.findAllById(((UserEmployeeDTO) object).getEmployeeSet()));
-        user.setEmployeeSet(employeeSet);
     }
 
-    public void updateFromUserAuthorizationDTO(UserDTO object, User user) {
+    private void updateFromUserAuthorizationDTO(UserDTO object, User user) {
         user.setBackupEmail(((UserAuthorizationDTO) object).getBackupEmail());
-        user.setLogin(((UserAuthorizationDTO) object).getLogin()); //Нужно ли изменять логин?
+        //    user.setLogin(((UserAuthorizationDTO) object).getLogin()); //Нужно ли изменять логин?
         user.setPassword(((UserAuthorizationDTO) object).getPassword());
     }
 
@@ -102,14 +109,19 @@ public class UserService extends GenericService<User, UserDTO> {
     public User createFromDTO(UserDTO newObject) {
         User user = new User();
         updateFromUserDTO(newObject, user);
-        updateFromUserAuthorizationDTO(newObject, user);
+
+        if (newObject instanceof UserAuthorizationDTO) {
+            updateFromUserAuthorizationDTO(newObject, user);
+        }
 
         if (newObject instanceof UserOwnerCarDTO) {
             updateFromUserOwnerCarDTO(newObject, user);
         }
+
         if (newObject instanceof UserEmployeeDTO) {
             updateFromUserEmployeeDTO(newObject, user);
         }
+
         user.setCreatedBy(newObject.getCreatedBy());
         user.setCreatedWhen(LocalDateTime.now());
 
@@ -128,8 +140,42 @@ public class UserService extends GenericService<User, UserDTO> {
                 () -> new NotFoundException("User with such id = " + objectId + " not found"));
     }
 
+
+    public UserOwnerCarDTO getOneUserOwnerCarDTO(Long objectId) {
+        User user = userRepository.findById(objectId).orElseThrow(
+                () -> new NotFoundException("User with such id = " + objectId + " not found"));
+        UserOwnerCarDTO userOwnerCarDTO = new UserOwnerCarDTO(user);
+        Set<Long> carSet = new HashSet<>(carRepository.carIdByUserId(objectId));
+        userOwnerCarDTO.setCarSet(carSet);
+        return userOwnerCarDTO;
+    }
+
+    public UserEmployeeDTO getOneUserEmployeeDTO(Long objectId) {
+        User user = userRepository.findById(objectId).orElseThrow(
+                () -> new NotFoundException("User with such id = " + objectId + " not found"));
+        UserEmployeeDTO userEmployeeDTO = new UserEmployeeDTO(user);
+
+        return userEmployeeDTO;
+    }
+
     @Override
     public List<User> listAll() {
-        return userRepository.findAll();
+        return userRepository.allUsers();
+    }
+
+    /**
+     * Метод возвращает список автомобилей пользователя
+     *
+     * @param userId
+     * @return
+     */
+    public List<CarDTO> getCarsUser(Long userId) {
+        List<CarDTO> cars = new ArrayList<>();
+        for (Car car : carRepository.findByUserId(userId)) {
+            System.out.println(car.toString());
+            CarDTO carDTO = new CarDTO(car);
+            cars.add(carDTO);
+        }
+        return cars;
     }
 }

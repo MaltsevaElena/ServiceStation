@@ -31,20 +31,17 @@ public class Service extends GenericModel{
     @Serial
     private static final long serialVersionUID = -6723995435023423391L;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "code", nullable = false, unique = true)
+    @Column(name = "code", nullable = false)
     private String code;
 
     @Column(name = "rate_hour", nullable = false)
     private Double rateHour;
 
-    @Column(name = "service_station_id", insertable = false, updatable = false, nullable = false)
-    private Long serviceStationID;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_station_id", referencedColumnName = "id",
+    @JoinColumn(name = "service_station_id",
             foreignKey = @ForeignKey(name = "FK_SERVICES_SERVICE_STATIONS"), nullable = false)
     @ToString.Exclude
     @JsonIgnore

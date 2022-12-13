@@ -1,6 +1,5 @@
 package com.maltseva.servicestation.project.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -19,7 +18,7 @@ import java.io.Serial;
 
 
 @Entity
-@Table(name = "spare_parts", uniqueConstraints = {@UniqueConstraint(name = "Unique_code_spare_part", columnNames = "code")})
+@Table(name = "spare_parts")
 @Getter
 @Setter
 @ToString
@@ -33,7 +32,7 @@ public class SparePart extends GenericModel{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "code", nullable = false, unique = true)
+    @Column(name = "code", nullable = false)
     private String code;
 
     @Column(name = "price", nullable = false)
@@ -46,11 +45,9 @@ public class SparePart extends GenericModel{
     @Enumerated
     private Unit unit;
 
-    @Column(name = "warehouse_id", insertable = false, updatable = false, nullable = false)
-    private Long warehouseID;
 
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "warehouse_id", referencedColumnName = "id",
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id",
             foreignKey = @ForeignKey(name = "FK_WAREHOUSES_SPARE_PARTS"), nullable = false)
     @ToString.Exclude
     @JsonIgnore

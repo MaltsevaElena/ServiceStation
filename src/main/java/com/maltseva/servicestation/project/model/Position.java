@@ -27,7 +27,7 @@ public class Position {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "name", nullable = false)
+    private String name;
 
 }

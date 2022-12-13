@@ -16,7 +16,7 @@ import static java.time.LocalDateTime.now;
 /**
  * @author Maltseva
  * @version 1.0
- * @since 27.11.2022
+ * @since 13.12.2022
  */
 @Service
 public class TariffService extends GenericService<Tariff, TariffDTO> {
@@ -44,7 +44,7 @@ public class TariffService extends GenericService<Tariff, TariffDTO> {
         return tariffRepository.save(tariff);
     }
 
-    public void updateFromTariffDTO(TariffDTO object, Tariff tariff) {
+    private void updateFromTariffDTO(TariffDTO object, Tariff tariff) {
         tariff.setPrice(object.getPrice());
 
         ServiceStation serviceStation = serviceStationRepository.findById(object.getServiceStationId()).orElseThrow(
@@ -68,7 +68,7 @@ public class TariffService extends GenericService<Tariff, TariffDTO> {
         newTariff.setCreatedBy(newObject.getCreatedBy());
         newTariff.setCreatedWhen(now());
 
-        return null;
+        return tariffRepository.save(newTariff);
     }
 
     @Override
@@ -79,20 +79,29 @@ public class TariffService extends GenericService<Tariff, TariffDTO> {
 
     @Override
     public List<Tariff> listAll() {
-        return tariffRepository.findAll();
+        return tariffRepository.allTariff();
+    }
+
+    public List<Tariff> listAllTariffByServiceStationId(Long serviceStationId) {
+        return tariffRepository.allTariffByServiceStationId(serviceStationId);
     }
 
     /**
      * Закрываем действие тарифа.
      *
      * @param tariffId
-     * @param date
+     * @param dateEnd
      * @return
      */
-    public Tariff setEndDate(Long tariffId, LocalDate date) {
+    public Tariff setEndDate(Long tariffId, LocalDate dateEnd) throws ServiceException {
         Tariff tariff = tariffRepository.findById(tariffId).orElseThrow(
                 () -> new NotFoundException("Tariff with such id = " + tariffId + " not found"));
-        tariff.setEndDate(date);
+        LocalDate dateStart = tariff.getStartDate();
+        if (dateEnd.isAfter(dateStart)) {
+            tariff.setEndDate(dateEnd);
+        } else {
+            throw new ServiceException("Дата окончания действия тарифа (" + dateEnd + ")не может быть меньше даты начала действия (" + dateStart + ") тарифа!");
+        }
 
         return tariffRepository.save(tariff);
     }

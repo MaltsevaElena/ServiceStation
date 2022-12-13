@@ -1,6 +1,5 @@
 package com.maltseva.servicestation.project.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -35,7 +34,7 @@ public class Car extends GenericModel{
     @Column(name = "registration_number", nullable = false)
     private String registrationNumber;
 
-    @Column(name = "vin", nullable = false, unique = true)
+    @Column(name = "vin", nullable = false)
     private String vin;
 
     @Column(name = "owner_car")
@@ -47,15 +46,11 @@ public class Car extends GenericModel{
     @Column(name = "year", nullable = false)
     private Integer year;
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private Long userId;
-
     /*Машина может существовать без пользователя,
     и может быть передана другому пользователю.
     Поэтому каскада нет*/
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "FK_CARS_USERS"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_CARS_USERS"))
     @ToString.Exclude
     @JsonIgnore
     private User user;

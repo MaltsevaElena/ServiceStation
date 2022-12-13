@@ -1,7 +1,6 @@
 package com.maltseva.servicestation.project.service;
 
 import com.maltseva.servicestation.project.dto.ServiceStationDTO;
-import com.maltseva.servicestation.project.dto.ServiceStationEmployeeWarehouseServiceDTO;
 import com.maltseva.servicestation.project.model.*;
 import com.maltseva.servicestation.project.repository.*;
 import org.springframework.stereotype.Service;
@@ -9,10 +8,13 @@ import org.webjars.NotFoundException;
 
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * @author Maltseva
+ * @version 1.0
+ * @since 13.12.2022
+ */
 @Service
 public class ServiceStationService extends GenericService<ServiceStation, ServiceStationDTO> {
 
@@ -47,28 +49,10 @@ public class ServiceStationService extends GenericService<ServiceStation, Servic
         return serviceStationRepository.save(serviceStation);
     }
 
-    public void updateFromServiceStationDTO(ServiceStationDTO object, ServiceStation serviceStation) {
+    private void updateFromServiceStationDTO(ServiceStationDTO object, ServiceStation serviceStation) {
         serviceStation.setName(object.getName());
         serviceStation.setAddress(object.getAddress());
         serviceStation.setPhone(object.getPhone());
-
-        Set<User> employeeSet = new HashSet<>(userRepository.findAllById(
-                ((ServiceStationEmployeeWarehouseServiceDTO) object).getEmployeeSet()));
-        serviceStation.setEmployeeSet(employeeSet);
-
-        Set<com.maltseva.servicestation.project.model.Service> serviceSet =
-                new HashSet<>(serviceRepository.findAllById(
-                        ((ServiceStationEmployeeWarehouseServiceDTO) object).getServiceSet()));
-        serviceStation.setServiceSet(serviceSet);
-
-        Set<Warehouse> warehouseSet = new HashSet<>(warehouseRepository.findAllById(
-                ((ServiceStationEmployeeWarehouseServiceDTO) object).getWarehouseSet()));
-        serviceStation.setWarehouseSet(warehouseSet);
-
-        Set<Tariff> tariffSet = new HashSet<>(tariffRepository.findAllById(
-                ((ServiceStationEmployeeWarehouseServiceDTO) object).getTariffSet()));
-        serviceStation.setTariffSet(tariffSet);
-
     }
 
     @Override

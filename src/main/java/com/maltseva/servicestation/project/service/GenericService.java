@@ -1,5 +1,6 @@
 package com.maltseva.servicestation.project.service;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,4 +21,5 @@ public abstract class GenericService<T, N> {
     public abstract T getOne(final Long objectId);
 
     public abstract List<T> listAll();
+
 }

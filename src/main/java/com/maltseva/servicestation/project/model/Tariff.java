@@ -1,6 +1,5 @@
 package com.maltseva.servicestation.project.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -38,11 +37,11 @@ public class Tariff extends GenericModel{
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_station_id", referencedColumnName = "id",
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_station_id",
             foreignKey = @ForeignKey(name = "FK_TARIFF_SERVICE_STATION"), nullable = false)
-    @JsonIgnore
     @ToString.Exclude
+    @JsonIgnore
     private ServiceStation serviceStation;
 
 }

@@ -1,13 +1,9 @@
 package com.maltseva.servicestation.project.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The service station class is associated:
@@ -44,29 +40,5 @@ public class ServiceStation extends GenericModel{
     //let's say there is only one phone
     @Column(name = "phone", nullable = false)
     private String phone;
-
-
-    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @ToString.Exclude
-    private Set<User> employeeSet = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @ToString.Exclude
-    private Set<Service> serviceSet = new HashSet<>();
-
-
-    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @ToString.Exclude
-    private Set<Warehouse> warehouseSet = new HashSet<>();
-
-    @OneToMany(mappedBy = "serviceStation",cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @ToString.Exclude
-    private Set<Tariff> tariffSet = new HashSet<>();
-
 
 }

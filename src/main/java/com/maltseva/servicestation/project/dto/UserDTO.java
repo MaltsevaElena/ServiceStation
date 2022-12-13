@@ -8,7 +8,7 @@ import java.time.LocalDate;
 /**
  * @author Maltseva
  * @version 1.0
- * @since 27.11.2022
+ * @since 13.12.2022
  */
 @Getter
 @Setter
@@ -18,7 +18,6 @@ import java.time.LocalDate;
 public class UserDTO extends CommonDTO {
 
     private Long id;
-
     private String lastName;
     private String firstName;
     private String middleName;
@@ -26,7 +25,9 @@ public class UserDTO extends CommonDTO {
     private LocalDate dateBirth;
     private String phone;
 
+
     public UserDTO(User user) {
+
         this.id = user.getId();
         this.lastName = user.getLastName();
         this.firstName = user.getFirstName();
@@ -34,6 +35,7 @@ public class UserDTO extends CommonDTO {
         this.address = user.getAddress();
         this.dateBirth = user.getDateBirth();
         this.phone = user.getPhone();
+
     }
 
 }

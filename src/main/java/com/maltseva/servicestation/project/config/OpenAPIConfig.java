@@ -14,9 +14,9 @@ public class OpenAPIConfig {
     public OpenAPI libraryProject() {
         return new OpenAPI().
                 info(new Info()
-                        .title("Онлайн библиотека")
-                        .description("Сервис, позволяющий арендовать книгу в онлайн библиотеке.")
-                        .version("v0.1")
+                        .title("Сервисная книжка онлайн")
+                        .description("Сервис, позволяющий отслеживать состояние автомобиля онлайн.")
+                        .version("v 0.1")
                         .license(new License().name("Apache 2.0").url("https://springdoc.org"))
                         .contact(new Contact().name("Elena M. Maltseva")
                                 .email("Maltseva.em@mail.ru")
