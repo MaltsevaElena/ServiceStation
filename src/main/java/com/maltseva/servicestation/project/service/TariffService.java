@@ -82,16 +82,22 @@ public class TariffService extends GenericService<Tariff, TariffDTO> {
         return tariffRepository.allTariff();
     }
 
+    /**
+     * Получить список тарифов по Id СТО
+     *
+     * @param serviceStationId
+     * @return List<Tariff>
+     */
     public List<Tariff> listAllTariffByServiceStationId(Long serviceStationId) {
         return tariffRepository.allTariffByServiceStationId(serviceStationId);
     }
 
     /**
-     * Закрываем действие тарифа.
+     * Закрываем действие тарифа по его id.
      *
      * @param tariffId
      * @param dateEnd
-     * @return
+     * @return Tariff
      */
     public Tariff setEndDate(Long tariffId, LocalDate dateEnd) throws ServiceException {
         Tariff tariff = tariffRepository.findById(tariffId).orElseThrow(

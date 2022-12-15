@@ -73,6 +73,12 @@ public class ServiceService extends GenericService<Service, ServiceDTO> {
 
     @Override
     public List<Service> listAll() {
-        return serviceRepository.findAll();
+        return serviceRepository.allService();
     }
+
+
+    public List<Service> getAllServiceByServiceStationId(Long serviceStationId) {
+        return serviceRepository.findByServiceStationId(serviceStationId);
+    }
+
 }

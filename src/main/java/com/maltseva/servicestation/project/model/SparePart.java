@@ -10,7 +10,6 @@ import java.io.Serial;
  * The spare part class is associated
  * many-to-one with class warehouse
  *
- *
  * @author Maltseva
  * @version 1.0
  * @since 25.11.2022
@@ -32,7 +31,7 @@ public class SparePart extends GenericModel{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "code")
     private String code;
 
     @Column(name = "price", nullable = false)
@@ -46,6 +45,7 @@ public class SparePart extends GenericModel{
     private Unit unit;
 
 
+    //Деталь может быть не со склада, а куплена в магазине
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id",
             foreignKey = @ForeignKey(name = "FK_WAREHOUSES_SPARE_PARTS"), nullable = false)

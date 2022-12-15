@@ -19,21 +19,12 @@ import java.util.List;
 public class ServiceStationService extends GenericService<ServiceStation, ServiceStationDTO> {
 
     private final ServiceStationRepository serviceStationRepository;
-    private final UserRepository userRepository;
-    private final ServiceRepository serviceRepository;
     private final WarehouseRepository warehouseRepository;
-    private final TariffRepository tariffRepository;
 
-
-    public ServiceStationService(ServiceStationRepository serviceStationRepository, UserRepository userRepository,
-                                 ServiceRepository serviceRepository, WarehouseRepository warehouseRepository,
-                                 TariffRepository tariffRepository) {
+    public ServiceStationService(ServiceStationRepository serviceStationRepository,
+                                 WarehouseRepository warehouseRepository) {
         this.serviceStationRepository = serviceStationRepository;
-        this.userRepository = userRepository;
-        this.serviceRepository = serviceRepository;
         this.warehouseRepository = warehouseRepository;
-        this.tariffRepository = tariffRepository;
-
     }
 
     @Override
@@ -64,15 +55,21 @@ public class ServiceStationService extends GenericService<ServiceStation, Servic
     public ServiceStation createFromDTO(ServiceStationDTO newObject) {
         ServiceStation newServiceStation = new ServiceStation();
         updateFromServiceStationDTO(newObject, newServiceStation);
+
         newServiceStation.setCreatedBy(newObject.getCreatedBy());
         newServiceStation.setCreatedWhen(LocalDateTime.now());
         return serviceStationRepository.save(newServiceStation);
     }
 
-    public void delete(Long objectId) {
+    public void delete(Long objectId) throws ServiceException {
         ServiceStation serviceStation = serviceStationRepository.findById(objectId).orElseThrow(
                 () -> new NotFoundException("Service station with such id = " + objectId + " not found"));
-        serviceStationRepository.delete(serviceStation);
+        List<Warehouse> warehouseList = warehouseRepository.findByServiceStationId(objectId);
+        if (warehouseList.isEmpty()) {
+            serviceStationRepository.delete(serviceStation);
+        } else {
+            throw new ServiceException("Невозможно удалить СТО, так как к нему привязан склад");
+        }
     }
 
     @Override
@@ -83,6 +80,6 @@ public class ServiceStationService extends GenericService<ServiceStation, Servic
 
     @Override
     public List<ServiceStation> listAll() {
-        return serviceStationRepository.findAll();
+        return serviceStationRepository.allServiceStation();
     }
 }
