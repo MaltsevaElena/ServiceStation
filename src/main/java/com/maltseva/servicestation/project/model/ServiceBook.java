@@ -7,7 +7,13 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serial;
 import java.time.LocalDate;
-
+/**
+ * The car class is associated with the car by a many-to-one relationship
+ *
+ * @author Maltseva
+ * @version 1.0
+ * @since 15.12.2022
+ */
 
 @Entity
 @Table(name = "service_books")
@@ -21,9 +27,9 @@ public class ServiceBook extends GenericModel {
 
     @Serial
     private static final long serialVersionUID = -462322220606112748L;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_id", foreignKey = @ForeignKey(name = "FK_BOOKS_CARS"))
+    @JoinColumn(name = "car_id", foreignKey = @ForeignKey(name = "FK_BOOKS_CARS"), nullable = false)
     @ToString.Exclude
     @JsonIgnore
     private Car car;
@@ -43,7 +49,7 @@ public class ServiceBook extends GenericModel {
     @Column(name = "amount_spare_part", nullable = false)
     private Integer amountSparePart;
 
-    @Column(name = "unit_spare_part")
+    @Column(name = "unit_spare_part", nullable = false)
     @Enumerated
     private Unit unitSparePart;
 

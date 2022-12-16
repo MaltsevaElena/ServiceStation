@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 /**
  * @author Maltseva
  * @version 1.0
@@ -26,7 +24,6 @@ public class UserEmployeeDTO extends UserDTO {
     public UserEmployeeDTO(User user) {
         super(user);
         this.positionID = user.getPosition().getId();
-        this.serviceStationID = user.getServiceStation().getId();
         this.employeeChiefID = user.getChief().getId();
     }
 

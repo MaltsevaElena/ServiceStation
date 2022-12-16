@@ -2,7 +2,9 @@ package com.maltseva.servicestation.project.service;
 
 import com.maltseva.servicestation.project.dto.PositionDTO;
 import com.maltseva.servicestation.project.model.Position;
+import com.maltseva.servicestation.project.model.ServiceStation;
 import com.maltseva.servicestation.project.repository.PositionRepository;
+import com.maltseva.servicestation.project.repository.ServiceStationRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -17,9 +19,12 @@ import java.util.List;
 public class PositionService extends GenericService<Position, PositionDTO> {
 
     private final PositionRepository positionRepository;
+    private final ServiceStationRepository serviceStationRepository;
 
-    public PositionService(PositionRepository positionRepository) {
+    public PositionService(PositionRepository positionRepository,
+                           ServiceStationRepository serviceStationRepository) {
         this.positionRepository = positionRepository;
+        this.serviceStationRepository = serviceStationRepository;
     }
 
     @Override
@@ -38,6 +43,10 @@ public class PositionService extends GenericService<Position, PositionDTO> {
     public void updateFromPositionDTO(PositionDTO object, Position position) {
         position.setDescription(object.getDescription());
         position.setName(object.getName());
+
+        ServiceStation serviceStation = serviceStationRepository.findById(object.getServiceStationID()).orElseThrow(
+                () -> new NotFoundException("ServiceStation with such id = " + object.getServiceStationID() + " not found"));
+        position.setServiceStation(serviceStation);
     }
 
     @Override

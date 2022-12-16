@@ -1,9 +1,6 @@
 package com.maltseva.servicestation.project.controller;
 
-import com.maltseva.servicestation.project.dto.CarDTO;
-import com.maltseva.servicestation.project.dto.UserDTO;
-import com.maltseva.servicestation.project.dto.UserEmployeeDTO;
-import com.maltseva.servicestation.project.dto.UserOwnerCarDTO;
+import com.maltseva.servicestation.project.dto.*;
 import com.maltseva.servicestation.project.model.Car;
 import com.maltseva.servicestation.project.model.User;
 import com.maltseva.servicestation.project.service.GenericService;
@@ -13,10 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,18 +26,17 @@ import java.util.List;
 @Tag(name = "Пользователи", description = "Контроллер для работы с пользователями.")
 public class UserController extends GenericController<User> {
 
-    private final GenericService<Car, CarDTO> carService;
+
     private final GenericService<User, UserDTO> userService;
 
-    public UserController(GenericService<Car, CarDTO> carService, GenericService<User, UserDTO> userService) {
-        this.carService = carService;
+    public UserController(GenericService<User, UserDTO> userService) {
         this.userService = userService;
     }
 
     @Override
     @Operation(description = "Получить всю информацию об одном пользователе по его ID", method = "getOne")
     @RequestMapping(value = "/getUser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<User> getOne(@RequestParam(value = "id") Long id) {
+    public ResponseEntity<User> getOne(@RequestParam(value = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.getOne(id));
     }
@@ -74,6 +67,22 @@ public class UserController extends GenericController<User> {
     public ResponseEntity<String> deleteUser(@RequestParam(value = "userId") Long id) {
         ((UserService) userService).delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("Пользователь успешно удален");
+    }
+
+    @Operation(description = "Добавить нового пользователя")
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> add(@RequestBody UserAuthorizationDTO newUserDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.createFromDTO(newUserDTO));
+    }
+
+
+    @Operation(description = "Изменить информацию об одном пользователе по его ID")
+    @RequestMapping(value = "/updateUser", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> updateCar(@RequestBody UserDTO updatedUserDTO,
+                                          @RequestParam(value = "userId") Long id) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.updateFromDTO(updatedUserDTO, id));
     }
 
     //TODO сделать рекурсивный запрос в БД для получения списка сотрудников в подчинении у сотрудника

@@ -1,4 +1,5 @@
 package com.maltseva.servicestation.project.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,5 +30,11 @@ public class Position {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_station_id", foreignKey = @ForeignKey(name = "FK_POSITIONS_SERVICE_STATIONS"))
+    @ToString.Exclude
+    @JsonIgnore
+    private ServiceStation serviceStation;
 
 }

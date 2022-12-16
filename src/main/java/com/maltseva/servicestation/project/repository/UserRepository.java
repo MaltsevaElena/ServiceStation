@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Maltseva
@@ -18,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select * from users", nativeQuery = true)
     List<User> allUsers();
+
+    @Query(value = "select * from users u inner join cars c on u.id = c.user_id where c.id = ?1", nativeQuery = true)
+    Optional<User> userByCarId(Long carId);
 }

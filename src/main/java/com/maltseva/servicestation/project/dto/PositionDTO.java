@@ -17,5 +17,6 @@ public class PositionDTO extends CommonDTO{
     private Long id;
     private String name;
     private String description;
+    private Long serviceStationID;
 
 }

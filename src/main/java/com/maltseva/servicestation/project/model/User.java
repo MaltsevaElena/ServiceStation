@@ -7,8 +7,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serial;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The user class is associated:
@@ -70,20 +68,6 @@ public class User extends GenericModel {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Role role;
 
-    //Машина может существовать без пользователя
-    @OneToMany(mappedBy = "user",cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @ToString.Exclude
-    private Set<Car> carSet = new HashSet<>();
-
-    //Перед удаление пользователя обнуляем информацию у автомобиля(автомобиль не удаляем)
-    //OnDeleteSetNull in DB for foreign key
-    @PreRemove
-    private void preRemove() {
-        for (Car car : carSet) {
-            car.setUser(null);
-        }
-    }
 
     //--поля для сотрудника--
     //будут null, если user несотрудник СТО
@@ -93,12 +77,6 @@ public class User extends GenericModel {
     @ToString.Exclude
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Position position;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_station_id", foreignKey = @ForeignKey(name = "FK_EMPLOYEES_SERVICE_STATIONS"))
-    @ToString.Exclude
-    @JsonIgnore
-    private ServiceStation serviceStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_chief_id",

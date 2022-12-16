@@ -1,6 +1,7 @@
 package com.maltseva.servicestation.project.repository;
 
 import com.maltseva.servicestation.project.model.Car;
+import com.maltseva.servicestation.project.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,4 +29,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 
     @Query("select c from Car c where c.registrationNumber = ?1")
     List<Car> findByRegistrationNumber(String registrationNumber);
+
+   
 }
