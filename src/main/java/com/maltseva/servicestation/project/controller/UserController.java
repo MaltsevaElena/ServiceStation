@@ -1,18 +1,23 @@
 package com.maltseva.servicestation.project.controller;
 
 import com.maltseva.servicestation.project.dto.*;
-import com.maltseva.servicestation.project.model.Car;
+import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
 import com.maltseva.servicestation.project.model.User;
 import com.maltseva.servicestation.project.service.GenericService;
 import com.maltseva.servicestation.project.service.UserService;
+import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
 /**
@@ -26,12 +31,34 @@ import java.util.List;
 @Tag(name = "Пользователи", description = "Контроллер для работы с пользователями.")
 public class UserController extends GenericController<User> {
 
+    private final CustomUserDetailsService authenticationService;
+    private final JwtTokenUtil jwtTokenUtil;
+
 
     private final GenericService<User, UserDTO> userService;
 
-    public UserController(GenericService<User, UserDTO> userService) {
+    public UserController(CustomUserDetailsService authenticationService,
+                          JwtTokenUtil jwtTokenUtil,
+                          GenericService<User, UserDTO> userService) {
+        this.authenticationService = authenticationService;
+        this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
     }
+
+    @RequestMapping(value = "/auth", method = POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> auth(@RequestBody LoginDTO loginDTO) {
+        HashMap<String, Object> response = new HashMap<>();
+        if (!((UserService) userService).checkPassword(loginDTO)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный логин/пароль");
+        } else {
+            UserDetails foundUser = authenticationService.loadUserByUsername(loginDTO.getUsername());
+            String token = jwtTokenUtil.generateToken(foundUser);
+            response.put("token", token);
+            return ResponseEntity.ok().body(response);
+        }
+    }
+
 
     @Override
     @Operation(description = "Получить всю информацию об одном пользователе по его ID", method = "getOne")
@@ -70,7 +97,7 @@ public class UserController extends GenericController<User> {
     }
 
     @Operation(description = "Добавить нового пользователя")
-    @RequestMapping(value = "/addUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/addUser", method = POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> add(@RequestBody UserAuthorizationDTO newUserDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createFromDTO(newUserDTO));

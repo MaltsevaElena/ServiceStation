@@ -8,6 +8,7 @@ import com.maltseva.servicestation.project.service.CarService;
 import com.maltseva.servicestation.project.service.GenericService;
 import com.maltseva.servicestation.project.service.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/Cars")
 @Tag(name = "Автомобили", description = "Контроллер для работы с автомобилями.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class CarController extends GenericController<Car> {
 
     private final GenericService<Car, CarDTO> carService;

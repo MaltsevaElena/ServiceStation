@@ -4,6 +4,7 @@ import com.maltseva.servicestation.project.dto.TariffDTO;
 import com.maltseva.servicestation.project.model.Tariff;
 import com.maltseva.servicestation.project.service.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/Tariffs")
 @Tag(name = "Тарифы", description = "Контроллер для работы с тарифами.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TariffController extends GenericController<Tariff> {
 
     private final GenericService<Tariff, TariffDTO> tariffService;

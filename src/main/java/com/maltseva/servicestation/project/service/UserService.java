@@ -3,6 +3,8 @@ package com.maltseva.servicestation.project.service;
 import com.maltseva.servicestation.project.dto.*;
 import com.maltseva.servicestation.project.model.*;
 import com.maltseva.servicestation.project.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -20,12 +22,14 @@ import java.util.Set;
 @Service
 public class UserService extends GenericService<User, UserDTO> {
 
+    private static final String CHANGE_PASSWORD_URL = "http://localhost:9090/users/change-password/";
     private final UserRepository userRepository;
 
     private final CarRepository carRepository;
 
     private final PositionRepository positionRepository;
     private final RoleRepository roleRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserService(UserRepository userRepository, CarRepository carRepository,
                        PositionRepository positionRepository, RoleRepository roleRepository) {
@@ -35,6 +39,12 @@ public class UserService extends GenericService<User, UserDTO> {
         this.roleRepository = roleRepository;
 
     }
+
+    @Autowired
+    public void setbCryptPasswordEncoder(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
 
     @Override
     public User updateFromEntity(User object) {
@@ -51,10 +61,9 @@ public class UserService extends GenericService<User, UserDTO> {
         if (object instanceof UserEmployeeDTO) {
             updateFromUserEmployeeDTO(object, user);
         }
-        if (object instanceof UserAuthorizationDTO) {
-            updateFromUserAuthorizationDTO(object, user);
-        }
-        return userRepository.save(user);
+
+        userRepository.save(user);
+        return user;
     }
 
     private void updateFromUserDTO(UserDTO object, User user) {
@@ -65,14 +74,13 @@ public class UserService extends GenericService<User, UserDTO> {
         user.setDateBirth(object.getDateBirth());
         user.setPhone(object.getPhone());
         Role role;
-        if (object.getRole().getId() == 0 || object.getRole() == null) {
+        // if (object.getRole().getId() == 0 || object.getRole() == null) {
+        if (object.getRole() == null) {
             role = roleRepository.findById(1L).get();
         } else {
             role = roleRepository.findById(object.getRole().getId()).get();
         }
         user.setRole(role);
-
-
     }
 
 
@@ -82,19 +90,14 @@ public class UserService extends GenericService<User, UserDTO> {
         );
         user.setPosition(position);
 
-        User employeeChief = userRepository.findById(((UserEmployeeDTO) object).getEmployeeChiefID()).orElseThrow(
-                () -> new NotFoundException("User with such id = " + ((UserEmployeeDTO) object).getEmployeeChiefID() + " not found"));
+        User employeeChief = userRepository.findById(((UserEmployeeDTO) object).getEmployeeChiefID()).get();
         user.setChief(employeeChief);
-    }
-
-    private void updateFromUserAuthorizationDTO(UserDTO object, User user) {
-        user.setBackupEmail(((UserAuthorizationDTO) object).getBackupEmail());
-        user.setPassword(((UserAuthorizationDTO) object).getPassword());
     }
 
 
     @Override
     public User createFromEntity(User newObject) {
+        newObject.setPassword(bCryptPasswordEncoder.encode(newObject.getPassword()));
         return userRepository.save(newObject);
     }
 
@@ -104,16 +107,19 @@ public class UserService extends GenericService<User, UserDTO> {
         updateFromUserDTO(newObject, user);
 
         if (newObject instanceof UserAuthorizationDTO) {
-            updateFromUserAuthorizationDTO(newObject, user);
             user.setLogin(((UserAuthorizationDTO) newObject).getLogin());
+            user.setBackupEmail(((UserAuthorizationDTO) newObject).getBackupEmail());
+            user.setPassword(bCryptPasswordEncoder.encode(((UserAuthorizationDTO) newObject).getPassword()));
+
         }
 
         if (newObject instanceof UserEmployeeDTO) {
             updateFromUserEmployeeDTO(newObject, user);
         }
 
-        user.setCreatedBy(newObject.getCreatedBy());
+        user.setCreatedBy("REGISTRATION FORM");
         user.setCreatedWhen(LocalDateTime.now());
+
         userRepository.save(user);
         return user;
     }
@@ -168,4 +174,22 @@ public class UserService extends GenericService<User, UserDTO> {
         }
         return cars;
     }
+
+    public void changePassword(Long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("User with such ID: " + userId + " not found."));
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        userRepository.save(user);
+    }
+
+    public User getByUserName(final String name) {
+        return userRepository.findUserByLogin(name);
+    }
+
+
+    public boolean checkPassword(LoginDTO loginDTO) {
+        return bCryptPasswordEncoder.matches(loginDTO.getPassword(),
+                getByUserName(loginDTO.getUsername()).getPassword());
+    }
 }
+

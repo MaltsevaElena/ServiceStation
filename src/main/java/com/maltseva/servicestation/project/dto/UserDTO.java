@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 
 public class UserDTO extends CommonDTO {
 

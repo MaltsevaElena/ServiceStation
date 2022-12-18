@@ -23,7 +23,7 @@ import java.time.LocalDate;
 
 
 @Entity
-@Table (name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(name = "Unique_login_user", columnNames = "login")})
 @Getter
 @Setter
 @ToString
@@ -47,7 +47,7 @@ public class User extends GenericModel {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "date_birth", nullable = false)
+    @Column(name = "date_birth")
     private LocalDate dateBirth;
 
     @Column(name = "back_up_email", nullable = false)

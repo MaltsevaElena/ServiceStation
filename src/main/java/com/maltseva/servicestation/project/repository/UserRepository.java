@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select * from users u inner join cars c on u.id = c.user_id where c.id = ?1", nativeQuery = true)
     Optional<User> userByCarId(Long carId);
+
+    User findUserByLogin(String username);
 }
