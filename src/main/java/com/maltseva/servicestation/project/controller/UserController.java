@@ -27,7 +27,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 
 @RestController
-@RequestMapping("/Users")
+@RequestMapping("/user")
 @Tag(name = "Пользователи", description = "Контроллер для работы с пользователями.")
 public class UserController extends GenericController<User> {
 
@@ -57,6 +57,23 @@ public class UserController extends GenericController<User> {
             response.put("token", token);
             return ResponseEntity.ok().body(response);
         }
+    }
+
+    @Operation(description = "Восстановить пароль по Email")
+    @RequestMapping(value = "/remember-password", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> rememberPassword(@RequestParam(value = "email") String email) {
+        // log.info("!!!Changing password!!!!");
+        UserDTO userDTO = ((UserService) userService).getUserByEmail(email);
+        ((UserService) userService).sendChangePasswordEmail(email, userDTO.getId());
+        return ResponseEntity.status(HttpStatus.OK).body("На вашу почту отправлено письмо с восстановление пароля");
+    }
+
+    @Operation(description = "Изменить пароль поссле отправки Email")
+    @RequestMapping(value = "/change-password/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> changePassword(@PathVariable Long userId,
+                                                 @RequestParam(value = "Password") String password) {
+        ((UserService) userService).changePassword(userId, password);
+        return ResponseEntity.status(HttpStatus.OK).body("Пароль успешно изменен");
     }
 
 
@@ -98,7 +115,7 @@ public class UserController extends GenericController<User> {
 
     @Operation(description = "Добавить нового пользователя")
     @RequestMapping(value = "/addUser", method = POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> add(@RequestBody UserAuthorizationDTO newUserDTO) {
+    public ResponseEntity<User> add(@RequestBody UserDTO newUserDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createFromDTO(newUserDTO));
     }

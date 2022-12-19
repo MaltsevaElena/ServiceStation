@@ -26,6 +26,9 @@ public class UserDTO extends CommonDTO {
     private LocalDate dateBirth;
     private String phone;
     private RoleDTO role;
+    private String backUpEmail;
+    private String login;
+    private String password;
 
 
     public UserDTO(User user) {
@@ -38,6 +41,9 @@ public class UserDTO extends CommonDTO {
         this.dateBirth = user.getDateBirth();
         this.phone = user.getPhone();
         this.role = new RoleDTO(user.getRole());
+        this.backUpEmail = user.getBackUpEmail();
+        this.login = user.getLogin();
+        this.password = user.getPassword();
 
     }
 

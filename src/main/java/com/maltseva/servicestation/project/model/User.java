@@ -51,7 +51,7 @@ public class User extends GenericModel {
     private LocalDate dateBirth;
 
     @Column(name = "back_up_email", nullable = false)
-    private String backupEmail;
+    private String backUpEmail;
 
     @Column(name = "login", nullable = false)
     private String login;

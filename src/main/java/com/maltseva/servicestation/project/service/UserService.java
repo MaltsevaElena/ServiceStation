@@ -4,6 +4,8 @@ import com.maltseva.servicestation.project.dto.*;
 import com.maltseva.servicestation.project.model.*;
 import com.maltseva.servicestation.project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -30,14 +32,16 @@ public class UserService extends GenericService<User, UserDTO> {
     private final PositionRepository positionRepository;
     private final RoleRepository roleRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JavaMailSender javaMailSender;
 
     public UserService(UserRepository userRepository, CarRepository carRepository,
-                       PositionRepository positionRepository, RoleRepository roleRepository) {
+                       PositionRepository positionRepository, RoleRepository roleRepository, JavaMailSender javaMailSender) {
         this.userRepository = userRepository;
         this.carRepository = carRepository;
         this.positionRepository = positionRepository;
         this.roleRepository = roleRepository;
 
+        this.javaMailSender = javaMailSender;
     }
 
     @Autowired
@@ -74,7 +78,6 @@ public class UserService extends GenericService<User, UserDTO> {
         user.setDateBirth(object.getDateBirth());
         user.setPhone(object.getPhone());
         Role role;
-        // if (object.getRole().getId() == 0 || object.getRole() == null) {
         if (object.getRole() == null) {
             role = roleRepository.findById(1L).get();
         } else {
@@ -105,13 +108,10 @@ public class UserService extends GenericService<User, UserDTO> {
     public User createFromDTO(UserDTO newObject) {
         User user = new User();
         updateFromUserDTO(newObject, user);
+        user.setLogin(newObject.getLogin());
+        user.setBackUpEmail(newObject.getBackUpEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(newObject.getPassword()));
 
-        if (newObject instanceof UserAuthorizationDTO) {
-            user.setLogin(((UserAuthorizationDTO) newObject).getLogin());
-            user.setBackupEmail(((UserAuthorizationDTO) newObject).getBackupEmail());
-            user.setPassword(bCryptPasswordEncoder.encode(((UserAuthorizationDTO) newObject).getPassword()));
-
-        }
 
         if (newObject instanceof UserEmployeeDTO) {
             updateFromUserEmployeeDTO(newObject, user);
@@ -175,9 +175,33 @@ public class UserService extends GenericService<User, UserDTO> {
         return cars;
     }
 
+    /**
+     * Восстановление пароля по почте
+     *
+     * @param email
+     * @return UserDTO
+     */
+    public UserDTO getUserByEmail(final String email) {
+        return new UserDTO(userRepository.findByBackUpEmail(email));
+    }
+
+    public void sendChangePasswordEmail(final String backUpEmail,
+                                        final Long userId) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(backUpEmail);
+        message.setSubject("Восстановление пароля на сервисе \"Онлайн Сервисная книжка\"");
+        message.setText("Добрый день! Вы получили это письмо, так как с вашего аккаунта была отправлена заявка на восстановление пароля. " +
+                "Для восстановления пароля, перейдите по ссылке: " + CHANGE_PASSWORD_URL + userId);
+        javaMailSender.send(message);
+
+    }
+
+
     public void changePassword(Long userId, String password) {
+        System.out.println(userId);
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("User with such ID: " + userId + " not found."));
+        System.out.println(password);
         user.setPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
     }
