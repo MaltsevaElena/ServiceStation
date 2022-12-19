@@ -1,0 +1,13 @@
+#образ взятый за основу
+FROM openjdk:15
+#Записываем в переменную путь до WAR файла
+ARG jarFile=target/ServiceStation-1.war
+#Куда мы перемещаем варник внутри контейнера
+WORKDIR /opt/app
+#копируем jar внутрь контейнера
+COPY ${jarFile} serviceStarion.war
+#открываем порт
+EXPOSE 9090
+#команда для запуска
+ENTRYPOINT ["java", "-jar", "serviceStarion.war"]
+

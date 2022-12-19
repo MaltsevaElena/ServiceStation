@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.sber.courses</groupId>
     <artifactId>ServiceStation</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1</version>
     <packaging>war</packaging>
     <name>ServiceStation</name>
         <properties>
@@ -71,6 +71,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>42.5.1</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

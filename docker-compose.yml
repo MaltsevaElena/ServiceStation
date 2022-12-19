@@ -1,5 +1,18 @@
 version: "3.9"
 services:
+  deploy:
+    depends_on:
+      - postgres
+    container_name: deployServiceStationProject
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbPostgres:5432/DB_ServiceStation
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345
   postgres:
     container_name: dbPostgres
     image: postgres
