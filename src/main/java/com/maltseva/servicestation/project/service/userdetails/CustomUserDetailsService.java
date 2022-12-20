@@ -40,9 +40,21 @@ public class CustomUserDetailsService implements UserDetailsService {
         } else {
             User user = userRepository.findUserByLogin(username);
             List<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(user.getRole().getId() == 1L ? "ROLE_user" : "ROLE_employee"));
+            authorities.add(new SimpleGrantedAuthority(getRoleName(Math.toIntExact(user.getRole().getId()))));
             return new CustomUserDetails(user.getId().intValue(), username, user.getPassword(), authorities);
         }
+    }
+
+    private String getRoleName(Integer id) {
+        String roleNane = switch (id) {
+            case 1 -> "ROLE_USER";
+            case 2 -> "ROLE_LOGIST";
+            case 3 -> "ROLE_EMPLOYEE";
+            case 4 -> "ROLE_DIRECTOR";
+            default -> "";
+        };
+        return roleNane;
+
     }
 }
 
