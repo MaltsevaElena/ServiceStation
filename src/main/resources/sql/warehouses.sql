@@ -8,5 +8,9 @@ VALUES (1, 'Elena M', now(), 'Склад SV Центр', 1),
        (7, 'Elena M', now(), 'Склад Transmission center', 5),
        (8, 'Elena M', now(), 'Склад GN service', 6),
        (9, 'Elena M', now(), 'Склад 2 GN service', 6),
-       (10, 'Elena M', now(), 'Склад Техцентр №1', 8),
-       (11, 'Elena M', now(), 'Склад 2 Техцентр №1', 8);
+       (10, 'Elena M', now(), 'Склад Техцентр №1', 8);
+
+SELECT setval('warehouses_seq', 10);
+
+
+

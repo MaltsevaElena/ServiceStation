@@ -30,3 +30,6 @@ VALUES (10, 'Elena M', now(), null, 2200, '2022-11-26', 9);
 
 INSERT INTO tariffs (id, created_by, created_when, end_date, price, start_date, service_station_id)
 VALUES (11, 'Elena M', now(), null, 2000, '2022-11-26', 10);
+
+
+SELECT setval('tariff_seq', 11);

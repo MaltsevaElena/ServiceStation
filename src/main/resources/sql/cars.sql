@@ -31,3 +31,8 @@ VALUES (9, 'Elena M', now(), 78000, 'Skoda Yeti', null, 'e678kx159', null, 'W123
 
 INSERT INTO cars (id, created_by, created_when, mileage, model, owner_car, registration_number, user_id, vin, year)
 VALUES (10, 'Elena M', now(), 34000, 'Skoda Kodiak', null, 'e789kx159', null, 'W123FX34SE3H45GVR124', 2021);
+
+SELECT setval('cars_seq', 10);
+
+INSERT INTO diagnostic_sheets (id, created_by, created_when, diagnostic_result, repair_date, car_id, user_id)
+VALUES (1, 'CTO 1', now(), null, now(), 1, 1);

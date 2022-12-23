@@ -121,3 +121,31 @@ CREATE TABLE spare_parts
     CONSTRAINT spare_parts_pkey PRIMARY KEY (id),
     CONSTRAINT fk_warehouses_spare_parts FOREIGN KEY (warehouse_id) REFERENCES warehouses (id)
 );
+
+create table diagnostic_sheets
+(
+    id                bigint not null primary key,
+    created_by        varchar(255),
+    created_when      timestamp,
+    diagnostic_result varchar(255),
+    repair_date       date   not null,
+    car_id            bigint not null
+        constraint fk_diagnostic_sheet_cars references cars,
+    user_id           bigint
+        constraint fk_diagnostic_sheet_employer references users
+);
+
+create table service_books
+(
+    id                bigint       not null primary key,
+    created_by        varchar(255),
+    created_when      timestamp,
+    amount_spare_part integer      not null,
+    code_spare_part   varchar(255),
+    mileage_car       integer      not null,
+    name_spare_part   varchar(255) not null,
+    repair_date       date         not null,
+    unit_spare_part   integer      not null,
+    car_id            bigint       not null
+        constraint fk_books_cars references cars
+);
