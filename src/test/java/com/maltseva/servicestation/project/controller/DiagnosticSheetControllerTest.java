@@ -4,9 +4,9 @@ package com.maltseva.servicestation.project.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.maltseva.servicestation.project.dto.ServiceStationDTO;
+import com.maltseva.servicestation.project.dto.DiagnosticSheetDTO;
 import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
-import com.maltseva.servicestation.project.model.ServiceStation;
+import com.maltseva.servicestation.project.model.*;
 import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +17,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class ServiceStationControllerTest {
+public class DiagnosticSheetControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,10 +36,8 @@ public class ServiceStationControllerTest {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    private static final String CONTROLLER_PATH = "/serviceStation";
-
+    private static final String CONTROLLER_PATH = "/diagnosticSheet";
     private static final String ROLE_USER_NAME = "elena_d";
-
     private String token;
 
     private HttpHeaders generateHeaders() {
@@ -47,7 +45,6 @@ public class ServiceStationControllerTest {
         token = generateToken(ROLE_USER_NAME);
         headers.add("Authorization", "Bearer " + token);
         return headers;
-
     }
 
     private String generateToken(String userName) {
@@ -55,11 +52,11 @@ public class ServiceStationControllerTest {
     }
 
     @Test
-    public void getServiceStation() throws Exception {
+    public void getDiagnosticSheet() throws Exception {
         String response = mockMvc.perform(
                         get(CONTROLLER_PATH + "/get")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "1")
+                                .param("diagnosticSheetId", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -72,15 +69,16 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        DiagnosticSheetDTO diagnosticSheet = objectMapper.readValue(response, DiagnosticSheetDTO.class);
+        System.out.println(diagnosticSheet);
     }
 
     @Test
-    public void listAllServiceStation() throws Exception {
+    public void getAllDiagnosticSheetByCarID() throws Exception {
         String result = mockMvc.perform(
-                        get(CONTROLLER_PATH + "/list")
+                        get(CONTROLLER_PATH + "/getAllDiagnosticSheetByCarID")
                                 .headers(generateHeaders())
+                                .param("carId", "2")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -92,25 +90,27 @@ public class ServiceStationControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        List<ServiceStation> serviceStations = mapper.readValue(result, new TypeReference<>() {
+        List<Long> diagnosticSheetList = mapper.readValue(result, new TypeReference<>() {
         });
-        System.out.println(serviceStations.size());
-        assertEquals(12, serviceStations.size());
+        System.out.println(diagnosticSheetList.size());
 
     }
 
     @Test
-    public void createServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO");
-        serviceStationDTO.setAddress("Perm");
-        serviceStationDTO.setPhone("8-888-88");
+    public void createDiagnosticSheet() throws Exception {
+        DiagnosticSheetDTO diagnosticSheet = new DiagnosticSheetDTO();
+        diagnosticSheet.setCarId(1L);
+        User user = new User();
+        user.setId(1L);
+        diagnosticSheet.setEmployerId(1L);
+        diagnosticSheet.setRepairDate(LocalDate.now());
+        diagnosticSheet.setCreatedWhen(LocalDateTime.now());
 
         String response = mockMvc.perform(
                         post(CONTROLLER_PATH + "/add")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
+                                .content(asJsonString(diagnosticSheet))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -123,45 +123,15 @@ public class ServiceStationControllerTest {
         System.out.println(response);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        DiagnosticSheet diagnosticSheetResult = objectMapper.readValue(response, DiagnosticSheet.class);
+        System.out.println(diagnosticSheetResult);
     }
 
     @Test
-    public void updateServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO UP");
-        serviceStationDTO.setAddress("Perm UP");
-        serviceStationDTO.setPhone("8-888-88 UP");
-
-        String response = mockMvc.perform(
-                        put(CONTROLLER_PATH + "/update")
-                                .headers(generateHeaders())
-                                .param("ServiceStationId", "2")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
-    }
-
-    @Test
-    public void deleteServiceStation() throws Exception {
+    public void deleteDiagnosticSheet() throws Exception {
         String response = mockMvc.perform(
                         delete(CONTROLLER_PATH + "/delete")
-                                .param("ServiceStationId", "15")
+                                .param("diagnosticSheetId", "3")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -174,15 +144,12 @@ public class ServiceStationControllerTest {
 
         System.out.println(response);
     }
-
 
     public String asJsonString(Object obj) {
         try {
-            return new ObjectMapper().writeValueAsString(obj);
+            return new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-
 }

@@ -1,22 +1,21 @@
 package com.maltseva.servicestation.project.controller;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.maltseva.servicestation.project.dto.ServiceStationDTO;
+import com.maltseva.servicestation.project.dto.PositionDTO;
 import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
-import com.maltseva.servicestation.project.model.ServiceStation;
+import com.maltseva.servicestation.project.model.Position;
 import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 
 import java.util.List;
 
@@ -25,10 +24,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class ServiceStationControllerTest {
+public class PositionControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,7 +35,7 @@ public class ServiceStationControllerTest {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    private static final String CONTROLLER_PATH = "/serviceStation";
+    private static final String CONTROLLER_PATH = "/position";
 
     private static final String ROLE_USER_NAME = "elena_d";
 
@@ -55,11 +54,12 @@ public class ServiceStationControllerTest {
     }
 
     @Test
-    public void getServiceStation() throws Exception {
+    @Bean
+    public void getPosition() throws Exception {
         String response = mockMvc.perform(
                         get(CONTROLLER_PATH + "/get")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "1")
+                                .param("positionId", "9")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -72,12 +72,12 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Position position = objectMapper.readValue(response, Position.class);
+        System.out.println(position);
     }
 
     @Test
-    public void listAllServiceStation() throws Exception {
+    public void listAllPosition() throws Exception {
         String result = mockMvc.perform(
                         get(CONTROLLER_PATH + "/list")
                                 .headers(generateHeaders())
@@ -92,25 +92,25 @@ public class ServiceStationControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        List<ServiceStation> serviceStations = mapper.readValue(result, new TypeReference<>() {
+        List<Position> positions = mapper.readValue(result, new TypeReference<>() {
         });
-        System.out.println(serviceStations.size());
-        assertEquals(12, serviceStations.size());
+        System.out.println(positions.size());
+        assertEquals(11, positions.size());
 
     }
 
     @Test
-    public void createServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO");
-        serviceStationDTO.setAddress("Perm");
-        serviceStationDTO.setPhone("8-888-88");
+    public void createPosition() throws Exception {
+        PositionDTO positionDTO = new PositionDTO();
+        positionDTO.setDescription("Test position");
+        positionDTO.setName("Test");
+        positionDTO.setServiceStationID(1L);
 
         String response = mockMvc.perform(
                         post(CONTROLLER_PATH + "/add")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
+                                .content(asJsonString(positionDTO))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -124,23 +124,23 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Position position = objectMapper.readValue(response, Position.class);
+        System.out.println(position);
     }
 
     @Test
-    public void updateServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO UP");
-        serviceStationDTO.setAddress("Perm UP");
-        serviceStationDTO.setPhone("8-888-88 UP");
+    public void updatePosition() throws Exception {
+        PositionDTO positionDTO = new PositionDTO();
+        positionDTO.setDescription("Test position Upp");
+        positionDTO.setName("Test");
+        positionDTO.setServiceStationID(1L);
 
         String response = mockMvc.perform(
                         put(CONTROLLER_PATH + "/update")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "2")
+                                .param("positionId", "11")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
+                                .content(asJsonString(positionDTO))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -153,28 +153,9 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Position position = objectMapper.readValue(response, Position.class);
+        System.out.println(position);
     }
-
-    @Test
-    public void deleteServiceStation() throws Exception {
-        String response = mockMvc.perform(
-                        delete(CONTROLLER_PATH + "/delete")
-                                .param("ServiceStationId", "15")
-                                .headers(generateHeaders())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        System.out.println(response);
-    }
-
 
     public String asJsonString(Object obj) {
         try {
@@ -183,6 +164,5 @@ public class ServiceStationControllerTest {
             throw new RuntimeException(e);
         }
     }
-
-
 }
+

@@ -1,12 +1,11 @@
 package com.maltseva.servicestation.project.controller;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.maltseva.servicestation.project.dto.ServiceStationDTO;
+import com.maltseva.servicestation.project.dto.WarehouseDTO;
 import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
-import com.maltseva.servicestation.project.model.ServiceStation;
+import com.maltseva.servicestation.project.model.Warehouse;
 import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 
 import java.util.List;
 
@@ -28,15 +26,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class ServiceStationControllerTest {
+public class WarehouseControllerTest {
+
+    private static final String CONTROLLER_PATH = "/warehouse";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
-    private static final String CONTROLLER_PATH = "/serviceStation";
 
     private static final String ROLE_USER_NAME = "elena_d";
 
@@ -55,11 +53,11 @@ public class ServiceStationControllerTest {
     }
 
     @Test
-    public void getServiceStation() throws Exception {
+    public void getWarehouse() throws Exception {
         String response = mockMvc.perform(
                         get(CONTROLLER_PATH + "/get")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "1")
+                                .param("warehouseId", "2")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -72,15 +70,90 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Warehouse warehouse = objectMapper.readValue(response, Warehouse.class);
+        System.out.println(warehouse);
     }
 
     @Test
-    public void listAllServiceStation() throws Exception {
-        String result = mockMvc.perform(
-                        get(CONTROLLER_PATH + "/list")
+    public void createWarehouse() throws Exception {
+        WarehouseDTO warehouseDTO = new WarehouseDTO();
+        warehouseDTO.setServiceStationId(1L);
+        warehouseDTO.setName("Тестовый склад");
+
+        String response = mockMvc.perform(
+                        post(CONTROLLER_PATH + "/add")
                                 .headers(generateHeaders())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(asJsonString(warehouseDTO))
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        System.out.println(response);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        Warehouse warehouse = objectMapper.readValue(response, Warehouse.class);
+        System.out.println(warehouse);
+    }
+
+    @Test
+    public void updateWarehouseDTO() throws Exception {
+        WarehouseDTO warehouseDTO = new WarehouseDTO();
+        warehouseDTO.setServiceStationId(1L);
+        warehouseDTO.setName("Тестовый склад UPP");
+
+        String response = mockMvc.perform(
+                        put(CONTROLLER_PATH + "/update")
+                                .headers(generateHeaders())
+                                .param("warehouseId", "1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(asJsonString(warehouseDTO))
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        Warehouse warehouse = objectMapper.readValue(response, Warehouse.class);
+        System.out.println(warehouse);
+    }
+
+    @Test
+    public void deleteWarehouse() throws Exception {
+        String response = mockMvc.perform(
+                        delete(CONTROLLER_PATH + "/delete")
+                                .param("warehouseId", "1")
+                                .headers(generateHeaders())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        System.out.println(response);
+    }
+
+    @Test
+    public void listAllTariffByServiceStationId() throws Exception {
+        String result = mockMvc.perform(
+                        get(CONTROLLER_PATH + "/getAllWarehouseByServiceStationId")
+                                .headers(generateHeaders())
+                                .param("ServiceStationId", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -92,89 +165,12 @@ public class ServiceStationControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        List<ServiceStation> serviceStations = mapper.readValue(result, new TypeReference<>() {
+        List<Warehouse> warehouses = mapper.readValue(result, new TypeReference<>() {
         });
-        System.out.println(serviceStations.size());
-        assertEquals(12, serviceStations.size());
+        System.out.println(warehouses.size());
+        assertEquals(3, warehouses.size());
 
     }
-
-    @Test
-    public void createServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO");
-        serviceStationDTO.setAddress("Perm");
-        serviceStationDTO.setPhone("8-888-88");
-
-        String response = mockMvc.perform(
-                        post(CONTROLLER_PATH + "/add")
-                                .headers(generateHeaders())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        System.out.println(response);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
-    }
-
-    @Test
-    public void updateServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO UP");
-        serviceStationDTO.setAddress("Perm UP");
-        serviceStationDTO.setPhone("8-888-88 UP");
-
-        String response = mockMvc.perform(
-                        put(CONTROLLER_PATH + "/update")
-                                .headers(generateHeaders())
-                                .param("ServiceStationId", "2")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
-    }
-
-    @Test
-    public void deleteServiceStation() throws Exception {
-        String response = mockMvc.perform(
-                        delete(CONTROLLER_PATH + "/delete")
-                                .param("ServiceStationId", "15")
-                                .headers(generateHeaders())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        System.out.println(response);
-    }
-
 
     public String asJsonString(Object obj) {
         try {

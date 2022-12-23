@@ -1,12 +1,11 @@
 package com.maltseva.servicestation.project.controller;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.maltseva.servicestation.project.dto.ServiceStationDTO;
+import com.maltseva.servicestation.project.dto.CarDTO;
 import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
-import com.maltseva.servicestation.project.model.ServiceStation;
+import com.maltseva.servicestation.project.model.Car;
 import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +16,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class ServiceStationControllerTest {
+public class CarControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,7 +33,7 @@ public class ServiceStationControllerTest {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    private static final String CONTROLLER_PATH = "/serviceStation";
+    private static final String CONTROLLER_PATH = "/car";
 
     private static final String ROLE_USER_NAME = "elena_d";
 
@@ -55,11 +52,11 @@ public class ServiceStationControllerTest {
     }
 
     @Test
-    public void getServiceStation() throws Exception {
+    public void getCar() throws Exception {
         String response = mockMvc.perform(
                         get(CONTROLLER_PATH + "/get")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "1")
+                                .param("carId", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -72,12 +69,12 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Car car = objectMapper.readValue(response, Car.class);
+        System.out.println(car);
     }
 
     @Test
-    public void listAllServiceStation() throws Exception {
+    public void listAllCar() throws Exception {
         String result = mockMvc.perform(
                         get(CONTROLLER_PATH + "/list")
                                 .headers(generateHeaders())
@@ -92,25 +89,27 @@ public class ServiceStationControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        List<ServiceStation> serviceStations = mapper.readValue(result, new TypeReference<>() {
+        List<Car> cars = mapper.readValue(result, new TypeReference<>() {
         });
-        System.out.println(serviceStations.size());
-        assertEquals(12, serviceStations.size());
-
+        System.out.println(cars.size());
     }
 
     @Test
-    public void createServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO");
-        serviceStationDTO.setAddress("Perm");
-        serviceStationDTO.setPhone("8-888-88");
+    public void createCar() throws Exception {
+        CarDTO car = new CarDTO();
+        car.setOwnerCar("Мальцева тест");
+        car.setVin("T");
+        car.setMileage(1000);
+        car.setYear(2000);
+        car.setModel("Toyota");
+        car.setRegistrationNumber("E111KX42");
+        car.setUserId(14L);
 
         String response = mockMvc.perform(
                         post(CONTROLLER_PATH + "/add")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
+                                .content(asJsonString(car))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -124,23 +123,19 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Car newCar = objectMapper.readValue(response, Car.class);
+        System.out.println(newCar);
     }
 
     @Test
-    public void updateServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO UP");
-        serviceStationDTO.setAddress("Perm UP");
-        serviceStationDTO.setPhone("8-888-88 UP");
+    public void updateMileageCar() throws Exception {
 
         String response = mockMvc.perform(
-                        put(CONTROLLER_PATH + "/update")
+                        put(CONTROLLER_PATH + "/updateMileageCar")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "2")
+                                .param("carId", "10")
+                                .param("mileage", "50000")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -153,26 +148,33 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        Car car = objectMapper.readValue(response, Car.class);
+        System.out.println(car);
     }
 
     @Test
-    public void deleteServiceStation() throws Exception {
+    public void updateOwnerCar() throws Exception {
         String response = mockMvc.perform(
-                        delete(CONTROLLER_PATH + "/delete")
-                                .param("ServiceStationId", "15")
+                        put(CONTROLLER_PATH + "/updateOwnerCar")
                                 .headers(generateHeaders())
+                                .param("carId", "21")
+                                .param("newUserId", "14")
+                                .param("ownerCar", "Смена владельца")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        System.out.println(response);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        Car car = objectMapper.readValue(response, Car.class);
+        System.out.println(car);
     }
 
 
@@ -183,6 +185,5 @@ public class ServiceStationControllerTest {
             throw new RuntimeException(e);
         }
     }
-
-
 }
+

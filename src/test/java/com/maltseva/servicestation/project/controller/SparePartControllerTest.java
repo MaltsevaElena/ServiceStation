@@ -1,12 +1,12 @@
 package com.maltseva.servicestation.project.controller;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.maltseva.servicestation.project.dto.ServiceStationDTO;
+import com.maltseva.servicestation.project.dto.SparePartDTO;
 import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
-import com.maltseva.servicestation.project.model.ServiceStation;
+import com.maltseva.servicestation.project.model.SparePart;
+import com.maltseva.servicestation.project.model.Unit;
 import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +17,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-public class ServiceStationControllerTest {
+public class SparePartControllerTest {
+    private static final String CONTROLLER_PATH = "/sparePart";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,10 +35,7 @@ public class ServiceStationControllerTest {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    private static final String CONTROLLER_PATH = "/serviceStation";
-
     private static final String ROLE_USER_NAME = "elena_d";
-
     private String token;
 
     private HttpHeaders generateHeaders() {
@@ -47,7 +43,6 @@ public class ServiceStationControllerTest {
         token = generateToken(ROLE_USER_NAME);
         headers.add("Authorization", "Bearer " + token);
         return headers;
-
     }
 
     private String generateToken(String userName) {
@@ -55,11 +50,11 @@ public class ServiceStationControllerTest {
     }
 
     @Test
-    public void getServiceStation() throws Exception {
+    public void getSparePart() throws Exception {
         String response = mockMvc.perform(
                         get(CONTROLLER_PATH + "/get")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "1")
+                                .param("sparePartId", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -72,15 +67,16 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        SparePart sparePart = objectMapper.readValue(response, SparePart.class);
+        System.out.println(sparePart);
     }
 
     @Test
-    public void listAllServiceStation() throws Exception {
+    public void listAllSparePartByWarehouseId() throws Exception {
         String result = mockMvc.perform(
-                        get(CONTROLLER_PATH + "/list")
+                        get(CONTROLLER_PATH + "/listSparePartByWarehouseId")
                                 .headers(generateHeaders())
+                                .param("WarehouseId", "1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
@@ -92,25 +88,28 @@ public class ServiceStationControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        List<ServiceStation> serviceStations = mapper.readValue(result, new TypeReference<>() {
+        List<SparePart> sparePartList = mapper.readValue(result, new TypeReference<>() {
         });
-        System.out.println(serviceStations.size());
-        assertEquals(12, serviceStations.size());
-
+        System.out.println(sparePartList.size());
+        //assertEquals(7, sparePartList.size());
     }
 
     @Test
-    public void createServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO");
-        serviceStationDTO.setAddress("Perm");
-        serviceStationDTO.setPhone("8-888-88");
+    public void createSparePart() throws Exception {
+        SparePartDTO sparePartDTO = new SparePartDTO();
+        sparePartDTO.setAmount(2);
+        sparePartDTO.setName("ТестAdd Дворник");
+        sparePartDTO.setUnit(Unit.PIECES);
+        sparePartDTO.setPrice(777.8);
+        sparePartDTO.setCode("yfu7r5stg");
+        sparePartDTO.setWarehouseId(2L);
+
 
         String response = mockMvc.perform(
                         post(CONTROLLER_PATH + "/add")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
+                                .content(asJsonString(sparePartDTO))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -124,23 +123,26 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        SparePart sparePart = objectMapper.readValue(response, SparePart.class);
+        System.out.println(sparePart);
     }
 
     @Test
-    public void updateServiceStation() throws Exception {
-        ServiceStationDTO serviceStationDTO = new ServiceStationDTO();
-        serviceStationDTO.setName("TestAdd STO UP");
-        serviceStationDTO.setAddress("Perm UP");
-        serviceStationDTO.setPhone("8-888-88 UP");
+    public void updateSparePars() throws Exception {
+        SparePartDTO sparePartDTO = new SparePartDTO();
+        sparePartDTO.setAmount(3);
+        sparePartDTO.setName("ТестAdd Дворник Upp");
+        sparePartDTO.setUnit(Unit.PIECES);
+        sparePartDTO.setPrice(777.8);
+        sparePartDTO.setCode("yfu7r5stg");
+        sparePartDTO.setWarehouseId(1L);
 
         String response = mockMvc.perform(
                         put(CONTROLLER_PATH + "/update")
                                 .headers(generateHeaders())
-                                .param("ServiceStationId", "2")
+                                .param("SparePartId", "12")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(asJsonString(serviceStationDTO))
+                                .content(asJsonString(sparePartDTO))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -153,15 +155,15 @@ public class ServiceStationControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ServiceStation serviceStation = objectMapper.readValue(response, ServiceStation.class);
-        System.out.println(serviceStation);
+        SparePart sparePart = objectMapper.readValue(response, SparePart.class);
+        System.out.println(sparePart);
     }
 
     @Test
-    public void deleteServiceStation() throws Exception {
+    public void deleteSparePart() throws Exception {
         String response = mockMvc.perform(
                         delete(CONTROLLER_PATH + "/delete")
-                                .param("ServiceStationId", "15")
+                                .param("sparePartId", "13")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
