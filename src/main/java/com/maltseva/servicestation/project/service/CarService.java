@@ -48,6 +48,10 @@ public class CarService extends GenericService<Car, CarDTO> {
         car.setVin(object.getVin());
         car.setYear(object.getYear());
 
+        User user = userRepository.findById(object.getUserId()).orElseThrow(
+                () -> new NotFoundException("User with such id = " + object.getUserId() + " not found"));
+        car.setUser(user);
+
     }
 
     @Override

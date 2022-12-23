@@ -81,7 +81,6 @@ public class ServiceBookService extends GenericService<ServiceBook, ServiceBookD
 
         updateFromServiceBookDTO(newObject, newServiceBook);
 
-        //TODO: ФИО пользователя или название СТО
         newServiceBook.setCreatedBy(newObject.getCreatedBy());
         newServiceBook.setCreatedWhen(newObject.getCreatedWhen());
 

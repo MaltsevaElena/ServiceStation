@@ -1,6 +1,7 @@
 package com.maltseva.servicestation.project.service;
 
 import com.maltseva.servicestation.project.dto.ServiceStationDTO;
+import com.maltseva.servicestation.project.exception.MyDeleteException;
 import com.maltseva.servicestation.project.model.*;
 import com.maltseva.servicestation.project.repository.*;
 import org.springframework.stereotype.Service;
@@ -61,14 +62,14 @@ public class ServiceStationService extends GenericService<ServiceStation, Servic
         return serviceStationRepository.save(newServiceStation);
     }
 
-    public void delete(Long objectId) throws ServiceException {
+    public void delete(Long objectId) throws ServiceException, MyDeleteException {
         ServiceStation serviceStation = serviceStationRepository.findById(objectId).orElseThrow(
                 () -> new NotFoundException("Service station with such id = " + objectId + " not found"));
         List<Warehouse> warehouseList = warehouseRepository.findByServiceStationId(objectId);
         if (warehouseList.isEmpty()) {
             serviceStationRepository.delete(serviceStation);
         } else {
-            throw new ServiceException("Невозможно удалить СТО, так как к нему привязан склад");
+            throw new MyDeleteException("Невозможно удалить СТО, так как к нему привязан склад");
         }
     }
 

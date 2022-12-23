@@ -67,9 +67,6 @@ public class SparePartService extends GenericService<SparePart, SparePartDTO> {
         return sparePartRepository.save(newSparePart);
     }
 
-    //TODO: можно удалить запчасть только со склада если запчасть ранее использовалась
-    // для замены в автомобиле, но больше не закупается иои не продается.
-    // Или удалить совсем, если не было использована для автомобилей
     public void delete(Long objectId) {
         SparePart sparePart = sparePartRepository.findById(objectId).orElseThrow(
                 () -> new NotFoundException("Spare part with such id = " + objectId + " not found"));

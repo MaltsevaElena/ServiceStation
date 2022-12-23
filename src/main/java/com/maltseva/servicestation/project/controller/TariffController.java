@@ -19,10 +19,10 @@ import java.util.List;
 /**
  * @author Maltseva
  * @version 1.0
- * @since 12.12.2022
+ * @since 22.12.2022
  */
 @RestController
-@RequestMapping("/Tariffs")
+@RequestMapping("/tariff")
 @Tag(name = "Тарифы", description = "Контроллер для работы с тарифами.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class TariffController extends GenericController<Tariff> {
@@ -35,8 +35,8 @@ public class TariffController extends GenericController<Tariff> {
 
     @Override
     @Operation(description = "Получить информацию об одном тарифе по его ID", method = "getOne")
-    @RequestMapping(value = "/getTariff", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Tariff> getOne(@RequestParam(value = "id") Long id) {
+    @RequestMapping(value = "/get", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Tariff> getOne(@RequestParam(value = "tariffId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tariffService.getOne(id));
     }
@@ -57,14 +57,14 @@ public class TariffController extends GenericController<Tariff> {
     }
 
     @Operation(description = "Добавить новый тарифф")
-    @RequestMapping(value = "/addTariff", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Tariff> add(@RequestBody TariffDTO newTariffDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(tariffService.createFromDTO(newTariffDTO));
     }
 
     @Operation(description = "Изменить информацию об одном автомобиле по его ID")
-    @RequestMapping(value = "/updateTariff", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/update", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Tariff> updateTariff(@RequestBody TariffDTO updatedTariffDTO,
                                                @RequestParam(value = "tariffId") Long id) {
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -51,7 +51,6 @@ public class TariffService extends GenericService<Tariff, TariffDTO> {
                 () -> new NotFoundException("Service Station with such id = " + object.getServiceStationId() + " not found"));
         tariff.setServiceStation(serviceStation);
 
-        tariff.setStartDate(object.getStartDate());
         tariff.setEndDate(object.getEndDate());
     }
 
@@ -65,6 +64,7 @@ public class TariffService extends GenericService<Tariff, TariffDTO> {
         Tariff newTariff = new Tariff();
 
         updateFromTariffDTO(newObject, newTariff);
+        newTariff.setStartDate(newObject.getStartDate());
         newTariff.setCreatedBy(newObject.getCreatedBy());
         newTariff.setCreatedWhen(now());
 

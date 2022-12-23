@@ -16,6 +16,7 @@ import java.util.List;
  * @since 13.12.2022
  */
 @Service
+
 public class PositionService extends GenericService<Position, PositionDTO> {
 
     private final PositionRepository positionRepository;

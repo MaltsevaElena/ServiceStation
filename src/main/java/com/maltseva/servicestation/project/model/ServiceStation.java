@@ -1,12 +1,9 @@
 package com.maltseva.servicestation.project.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serial;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The service station class is associated:
@@ -44,12 +41,5 @@ public class ServiceStation extends GenericModel{
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinTable(name = "service_station_diagnostic_date",
-            joinColumns = @JoinColumn(name = "service_station_id"), foreignKey = @ForeignKey(name = "FK_SERVICE_STATION_DIAGNOSTIC_DATE"),
-            inverseJoinColumns = @JoinColumn(name = "diagnostic_date_id"), inverseForeignKey = @ForeignKey(name = "FK_DIAGNOSTIC_DATE_SERVICE_STATION"))
-    @ToString.Exclude
-    @JsonIgnore
-    private Set<DiagnosticDate> diagnosticDatesForDiagnosticSheet = new HashSet<>();
 
 }

@@ -7,7 +7,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serial;
 import java.time.LocalDate;
-import java.util.*;
 
 /**
  * The car class is associated with the car by a many-to-one relationship
@@ -43,14 +42,10 @@ public class DiagnosticSheet extends GenericModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_DIAGNOSTIC_SHEET_EMPLOYER"))
     @ToString.Exclude
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User employer;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinTable(name = "diagnostic_sheet_diagnostic_result",
-            joinColumns = @JoinColumn(name = "diagnostic_sheet_id"), foreignKey = @ForeignKey(name = "FK_DIAGNOSTIC_SHEET_DIAGNOSTIC_RESULT"),
-            inverseJoinColumns = @JoinColumn(name = "diagnostic_result_id"), inverseForeignKey = @ForeignKey(name = "FK_DIAGNOSTIC_RESULT_DIAGNOSTIC_SHEET"))
-    @ToString.Exclude
-    private Set<DiagnosticResult> diagnosticResult = new HashSet<>();
+    @Column(name = "diagnostic_result")
+    private String diagnosticResult;
 
 }

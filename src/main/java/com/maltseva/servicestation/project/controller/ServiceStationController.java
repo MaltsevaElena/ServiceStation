@@ -4,11 +4,13 @@ package com.maltseva.servicestation.project.controller;
 import com.maltseva.servicestation.project.dto.ServiceDTO;
 import com.maltseva.servicestation.project.dto.ServiceStationDTO;
 import com.maltseva.servicestation.project.dto.WarehouseDTO;
+import com.maltseva.servicestation.project.exception.MyDeleteException;
 import com.maltseva.servicestation.project.model.Service;
 import com.maltseva.servicestation.project.model.ServiceStation;
 import com.maltseva.servicestation.project.model.Warehouse;
 import com.maltseva.servicestation.project.service.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,12 +22,13 @@ import java.util.List;
 /**
  * @author Maltseva
  * @version 1.0
- * @since 15.12.2022
+ * @since 22.12.2022
  */
 
 @RestController
-@RequestMapping("/ServiceStations")
+@RequestMapping("/serviceStation")
 @Tag(name = "Станция технического обслуживания", description = "Контроллер для работы с СТО.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ServiceStationController extends GenericController<ServiceStation> {
 
     private final GenericService<Warehouse, WarehouseDTO> warehouseService;
@@ -42,7 +45,7 @@ public class ServiceStationController extends GenericController<ServiceStation> 
 
     @Override
     @Operation(description = "Получить информацию о СТО по его ID", method = "getOne")
-    @RequestMapping(value = "/getServiceStation",
+    @RequestMapping(value = "/get",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceStation> getOne(@RequestParam(value = "ServiceStationId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -51,7 +54,7 @@ public class ServiceStationController extends GenericController<ServiceStation> 
 
 
     @Operation(description = "Получить информацию обо всех СТО")
-    @RequestMapping(value = "/listServiceStations",
+    @RequestMapping(value = "/list",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ServiceStation>> listAllServiceStations() {
         return ResponseEntity.status(HttpStatus.OK)
@@ -77,7 +80,7 @@ public class ServiceStationController extends GenericController<ServiceStation> 
     }
 
     @Operation(description = "Добавить новое СТО")
-    @RequestMapping(value = "/addServiceStation",
+    @RequestMapping(value = "/add",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceStation> add(@RequestBody ServiceStationDTO newServiceStationDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -85,7 +88,7 @@ public class ServiceStationController extends GenericController<ServiceStation> 
     }
 
     @Operation(description = "Изменить информацию о СТО по его ID")
-    @RequestMapping(value = "/updateServiceStation",
+    @RequestMapping(value = "/update",
             method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceStation> updateServiceStation(
             @RequestBody ServiceStationDTO updatedServiceStationDTO,
@@ -98,12 +101,8 @@ public class ServiceStationController extends GenericController<ServiceStation> 
     @RequestMapping(value = "/delete",
             method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteServiceStation(
-            @RequestParam(value = "ServiceStationId") Long id) throws ControllerException {
-        try {
-            ((ServiceStationService) serviceStationService).delete(id);
-        } catch (ServiceException e) {
-            throw new ControllerException(e);
-        }
+            @RequestParam(value = "ServiceStationId") Long id) throws ControllerException, MyDeleteException, ServiceException {
+        ((ServiceStationService) serviceStationService).delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("СТО успешно удалено");
     }
 }

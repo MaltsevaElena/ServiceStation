@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Maltseva
  * @version 1.0
- * @since 13.12.2022
+ * @since 23.12.2022
  */
 @org.springframework.stereotype.Service
 public class ServiceService extends GenericService<Service, ServiceDTO> {
@@ -55,6 +55,10 @@ public class ServiceService extends GenericService<Service, ServiceDTO> {
     public Service createFromDTO(ServiceDTO newObject) {
         Service newService = new Service();
         updateFromServiceDTO(newObject, newService);
+
+        newService.setCreatedWhen(newObject.getCreatedWhen());
+        newService.setCreatedBy(newService.getCreatedBy());
+
         return serviceRepository.save(newService);
     }
 

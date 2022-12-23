@@ -5,6 +5,7 @@ import com.maltseva.servicestation.project.model.ServiceBook;
 import com.maltseva.servicestation.project.service.GenericService;
 import com.maltseva.servicestation.project.service.ServiceBookService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,8 +21,9 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/ServiceBooks")
+@RequestMapping("/serviceBook")
 @Tag(name = "Сервисная книжка", description = "Контроллер для работы с записями в сервисной книжке.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ServiceBookController extends GenericController<ServiceBook> {
 
     private final GenericService<ServiceBook, ServiceBookDTO> serviceBookService;
@@ -32,8 +34,8 @@ public class ServiceBookController extends GenericController<ServiceBook> {
 
     @Override
     @Operation(description = "Получить информацию об одной записи из сервисной книжке по ее ID", method = "getOne")
-    @RequestMapping(value = "/getServiceBook", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ServiceBook> getOne(@RequestParam(value = "ServiceBookId") Long id) {
+    @RequestMapping(value = "/get", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ServiceBook> getOne(@RequestParam(value = "serviceBookId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(serviceBookService.getOne(id));
     }
@@ -41,14 +43,14 @@ public class ServiceBookController extends GenericController<ServiceBook> {
 
     @Operation(description = "Получить информацию обо всех записях в сервисной книжке по ID автомобиля")
     @RequestMapping(value = "/listServiceBookByCar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ServiceBook>> listAllServiceBookByCar(@RequestParam(value = "CarId") Long id) {
+    public ResponseEntity<List<ServiceBook>> listAllServiceBookByCar(@RequestParam(value = "carId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(((ServiceBookService) serviceBookService).allServiceBookByCar(id));
     }
 
 
     @Operation(description = "Добавить новую запись в сервисную книжку автомобиля")
-    @RequestMapping(value = "/addServiceBook", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceBook> add(@RequestBody ServiceBookDTO newServiceBookDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(serviceBookService.createFromDTO(newServiceBookDTO));
@@ -56,9 +58,9 @@ public class ServiceBookController extends GenericController<ServiceBook> {
 
 
     @Operation(description = "Изменить информацию в сервисной книжке по ID")
-    @RequestMapping(value = "/updateServiceBook", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/update", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceBook> updateCar(@RequestBody ServiceBookDTO updatedServiceBookDTO,
-                                                 @RequestParam(value = "ServiceBookId") Long id) {
+                                                 @RequestParam(value = "serviceBookId") Long id) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(serviceBookService.updateFromDTO(updatedServiceBookDTO, id));
     }

@@ -23,16 +23,16 @@ public class DiagnosticSheetDTO extends CommonDTO {
     private Long id;
     private LocalDate repairDate;
 
+    private Long carId;
+    private String registrationNumber;
+    private String vin;
+    private Integer mileage;
+
     private String lastNameOwnerCar;
     private String firstNameOwnerCar;
     private String middleNameOwnerCar;
     private String phoneOwnerCar;
     private String emailOwnerCar;
-
-    private Long carId;
-    private String registrationNumber;
-    private String vin;
-    private Integer mileage;
 
     private Long employerId;
     private String lastNameEmployer;
@@ -43,11 +43,14 @@ public class DiagnosticSheetDTO extends CommonDTO {
     private String nameServiceStation;
     private String addressServiceStation;
 
-    //private List<DiagnosticDate> diagnosticResult;
+    private String result;
+
 
     public DiagnosticSheetDTO(DiagnosticSheet diagnosticSheet) {
         this.id = diagnosticSheet.getId();
         this.repairDate = diagnosticSheet.getRepairDate();
+        this.employerId = diagnosticSheet.getEmployer().getId();
+        this.carId = diagnosticSheet.getCar().getId();
 
     }
 

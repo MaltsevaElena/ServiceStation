@@ -8,6 +8,7 @@ import com.maltseva.servicestation.project.model.Warehouse;
 import com.maltseva.servicestation.project.service.GenericService;
 import com.maltseva.servicestation.project.service.SparePartService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,8 +24,9 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/SpareParts")
+@RequestMapping("/sparePart")
 @Tag(name = "Запчасти", description = "Контроллер для работы с запчастями.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class SparePartController extends GenericController<SparePart> {
 
     private final GenericService<SparePart, SparePartDTO> sparePartService;
@@ -38,9 +40,9 @@ public class SparePartController extends GenericController<SparePart> {
 
     @Override
     @Operation(description = "Получить информацию об одной запчасти по его ID", method = "getOne")
-    @RequestMapping(value = "/getSparePart",
+    @RequestMapping(value = "/get",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SparePart> getOne(@RequestParam(value = "id") Long id) {
+    public ResponseEntity<SparePart> getOne(@RequestParam(value = "sparePartId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(sparePartService.getOne(id));
     }
@@ -48,7 +50,7 @@ public class SparePartController extends GenericController<SparePart> {
     @Operation(description = "Получить информацию обо всех запчастях в наличии по ID склада")
     @RequestMapping(value = "/listSparePartByWarehouseId",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<SparePart>> listSparePartByWarehouseId(@RequestParam(value = "id") Long id) {
+    public ResponseEntity<List<SparePart>> listSparePartByWarehouseId(@RequestParam(value = "WarehouseId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(((SparePartService) sparePartService).listAllSparePartByWarehouseId(id));
     }
@@ -115,7 +117,7 @@ public class SparePartController extends GenericController<SparePart> {
 
 
     @Operation(description = "Добавить новую запчасть")
-    @RequestMapping(value = "/addSparePart",
+    @RequestMapping(value = "/add",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SparePart> add(@RequestBody SparePartDTO newSparePartDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -124,7 +126,7 @@ public class SparePartController extends GenericController<SparePart> {
 
 
     @Operation(description = "Изменить информацию об одной запчасти по его ID")
-    @RequestMapping(value = "/updateSparePart",
+    @RequestMapping(value = "/update",
             method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SparePart> updateSparePart(@RequestBody SparePartDTO updatedSparePartDTO,
                                                      @RequestParam(value = "SparePartId") Long id) {

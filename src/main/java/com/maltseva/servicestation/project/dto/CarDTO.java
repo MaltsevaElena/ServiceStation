@@ -1,7 +1,6 @@
 package com.maltseva.servicestation.project.dto;
 
 import com.maltseva.servicestation.project.model.Car;
-import com.maltseva.servicestation.project.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +26,8 @@ public class CarDTO extends CommonDTO {
     private Integer mileage;
     private Integer year;
 
+    private Long userId;
+
 
     public CarDTO(Car car) {
         this.id = car.getId();
@@ -36,6 +37,7 @@ public class CarDTO extends CommonDTO {
         this.ownerCar = car.getOwnerCar();
         this.mileage = car.getMileage();
         this.year = car.getYear();
+        this.userId = car.getId();
 
     }
 }

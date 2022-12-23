@@ -18,7 +18,6 @@ import lombok.Setter;
 public class UserEmployeeDTO extends UserDTO {
 
     private Long positionID;
-    private Long serviceStationID;
     private Long employeeChiefID;
 
     public UserEmployeeDTO(User user) {

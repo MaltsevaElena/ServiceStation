@@ -20,11 +20,11 @@ import java.util.List;
 /**
  * @author Maltseva
  * @version 1.0
- * @since 12.12.2022
+ * @since 23.12.2022
  */
 
 @RestController
-@RequestMapping("/Cars")
+@RequestMapping("/car")
 @Tag(name = "Автомобили", description = "Контроллер для работы с автомобилями.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class CarController extends GenericController<Car> {
@@ -39,15 +39,15 @@ public class CarController extends GenericController<Car> {
 
     @Override
     @Operation(description = "Получить информацию об одном автомобиле по его ID", method = "getOne")
-    @RequestMapping(value = "/getCar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Car> getOne(@RequestParam(value = "id") Long id) {
+    @RequestMapping(value = "/get", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Car> getOne(@RequestParam(value = "carId") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(carService.getOne(id));
     }
 
 
     @Operation(description = "Получить информацию обо всех автомобилях")
-    @RequestMapping(value = "/listCar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Car>> listAllCars() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(carService.listAll());
@@ -68,15 +68,15 @@ public class CarController extends GenericController<Car> {
     }
 
     @Operation(description = "Добавить новый автомобиль")
-    @RequestMapping(value = "/addCar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Car> add(@RequestBody CarDTO newCarDTO) {
+    @RequestMapping(value = "/add", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Car> add(@RequestBody CarDTO newCar) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(carService.createFromDTO(newCarDTO));
+                .body(carService.createFromDTO(newCar));
     }
 
 
     @Operation(description = "Изменить информацию об одном автомобиле по его ID")
-    @RequestMapping(value = "/updateCar", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/update", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Car> updateCar(@RequestBody CarDTO updatedCarDTO,
                                          @RequestParam(value = "carId") Long id) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -95,7 +95,6 @@ public class CarController extends GenericController<Car> {
         }
     }
 
-    //TODO: изменить собсвенника может только владелец авто или админ
     @Operation(description = "Изменить собственника автомобиля при его продаже, по ID автомобиля")
     @RequestMapping(value = "/updateOwnerCar", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Car> updateOwnerCar(@RequestParam(value = "carId") Long carId,
