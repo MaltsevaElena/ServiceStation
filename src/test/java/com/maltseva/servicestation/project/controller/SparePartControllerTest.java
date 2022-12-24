@@ -35,7 +35,7 @@ public class SparePartControllerTest {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    private static final String ROLE_USER_NAME = "elena_d";
+    private static final String ROLE_USER_NAME = "elena_l";
     private String token;
 
     private HttpHeaders generateHeaders() {
@@ -163,7 +163,7 @@ public class SparePartControllerTest {
     public void deleteSparePart() throws Exception {
         String response = mockMvc.perform(
                         delete(CONTROLLER_PATH + "/delete")
-                                .param("sparePartId", "13")
+                                .param("sparePartId", "14")
                                 .headers(generateHeaders())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)

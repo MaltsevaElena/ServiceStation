@@ -40,7 +40,11 @@ public class JwtSecurityConfig implements WebMvcConfigurer {
             "/js/**",
             "/encode/*",
             // other public endpoints of your API may be appended to this array
-           "/user/**"
+            "/user/auth",
+            "/user/remember-password",
+            "/user/change-password/{userId}",
+            "/user/add"
+
     };
     private final JwtTokenFilter jwtTokenFilter;
 
@@ -77,19 +81,34 @@ public class JwtSecurityConfig implements WebMvcConfigurer {
                 .and()
                 .authorizeRequests()
                 //Доступ только для авторизованных пользователей
-                //Доступ для администратора для всего
-                //.antMatchers("/api/**").hasRole("ADMIN")
+                //Доступ для пользователя
+                .antMatchers("/user/updateUser").hasRole("USER")
+                .antMatchers("/user/delete").hasRole("USER")
+                .antMatchers("/user/getCarsUserById").hasRole("USER")
+                .antMatchers("/user/getUserOwnerCarDTO").hasRole("USER")
+                .antMatchers("/car/**").hasRole("USER")
+                .antMatchers("/serviceBook/**").hasAnyRole("USER", "EMPLOYEE")
                 //Доступ для логиста
-                /*.antMatchers("/api/warehouse/getWarehouse").hasRole("LOGIST")
-                .antMatchers("/api/sparePart/**").hasRole("LOGIST")
-*/
-
-                //.antMatchers("/Cars/**").hasRole("user")
-                //.antMatchers("/Tariffs/**").hasRole("user")
-                .antMatchers("/**").hasRole("DIRECTOR")
-
+                .antMatchers("/serviceStation/get").hasAnyRole("LOGICT", "EMPLOYEE")
+                .antMatchers("/serviceStation/getWarehousesByServiceStationId").hasRole("LOGICT")
+                .antMatchers("/warehouse/get").hasAnyRole("LOGIST", "EMPLOYEE")
+                .antMatchers("/sparePart/**").hasAnyRole("LOGIST", "EMPLOYEE", "DIRECTOR")
+                //Доступ для сотрудника
+                .antMatchers("/car/**").hasRole("EMPLOYEE")
+                .antMatchers("/diagnosticSheet/**").hasRole("EMPLOYEE")
+                .antMatchers("/service/get").hasRole("EMPLOYEE")
+                .antMatchers("/service/listAllServiceByServiceStationId").hasRole("EMPLOYEE")
+                .antMatchers("/tariff/get").hasRole("EMPLOYEE")
+                //Доступ для директора
+                .antMatchers("/tariff/**").hasRole("DIRECTOR")
+                .antMatchers("/position/**").hasRole("DIRECTOR")
+                .antMatchers("/service/**").hasRole("DIRECTOR")
+                .antMatchers("/serviceStation/**").hasRole("DIRECTOR")
+                .antMatchers("/warehouse/**").hasRole("DIRECTOR")
+                .antMatchers("/user/**").hasRole("DIRECTOR")
                 //.antMatchers("/cars/**").hasAuthority("ROLE_USER")
-                //.antMatchers("/cars/**").hasAneRole("USER", "ADMIN",...)
+                //Доступ для администратора
+                .antMatchers("/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
                 //JWT Token VALID or NOT

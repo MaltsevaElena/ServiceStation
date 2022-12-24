@@ -1,6 +1,7 @@
 package com.maltseva.servicestation.project.controller;
 
 import com.maltseva.servicestation.project.dto.*;
+import com.maltseva.servicestation.project.exception.MailDoesNotExistException;
 import com.maltseva.servicestation.project.exception.UpdateRoleException;
 import com.maltseva.servicestation.project.jwtsecurity.JwtTokenUtil;
 import com.maltseva.servicestation.project.model.User;
@@ -8,6 +9,7 @@ import com.maltseva.servicestation.project.service.GenericService;
 import com.maltseva.servicestation.project.service.UserService;
 import com.maltseva.servicestation.project.service.userdetails.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +32,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping("/user")
 @Tag(name = "Пользователи", description = "Контроллер для работы с пользователями.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class UserController extends GenericController<User> {
 
     private final CustomUserDetailsService authenticationService;
@@ -62,8 +65,7 @@ public class UserController extends GenericController<User> {
 
     @Operation(description = "Восстановить пароль по Email")
     @RequestMapping(value = "/remember-password", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> rememberPassword(@RequestParam(value = "email") String email) {
-        // log.info("!!!Changing password!!!!");
+    public ResponseEntity<String> rememberPassword(@RequestParam(value = "email") String email) throws MailDoesNotExistException {
         UserDTO userDTO = ((UserService) userService).getUserByEmail(email);
         ((UserService) userService).sendChangePasswordEmail(email, userDTO.getId());
         return ResponseEntity.status(HttpStatus.OK).body("На вашу почту отправлено письмо с восстановление пароля");

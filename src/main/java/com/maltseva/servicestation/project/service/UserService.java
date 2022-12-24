@@ -1,6 +1,7 @@
 package com.maltseva.servicestation.project.service;
 
 import com.maltseva.servicestation.project.dto.*;
+import com.maltseva.servicestation.project.exception.MailDoesNotExistException;
 import com.maltseva.servicestation.project.exception.UpdateRoleException;
 import com.maltseva.servicestation.project.model.*;
 import com.maltseva.servicestation.project.repository.*;
@@ -221,8 +222,14 @@ public class UserService extends GenericService<User, UserDTO> {
      * @param email
      * @return UserDTO
      */
-    public UserDTO getUserByEmail(final String email) {
-        return new UserDTO(userRepository.findByBackUpEmail(email));
+    public UserDTO getUserByEmail(final String email) throws MailDoesNotExistException {
+        UserDTO userDTO;
+        try {
+            userDTO = new UserDTO(userRepository.findByBackUpEmail(email));
+        } catch (NullPointerException ex) {
+            throw new MailDoesNotExistException("Пользователь с таким e-mail не найден");
+        }
+        return userDTO;
     }
 
     /**

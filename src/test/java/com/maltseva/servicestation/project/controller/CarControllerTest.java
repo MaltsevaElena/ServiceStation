@@ -35,7 +35,7 @@ public class CarControllerTest {
 
     private static final String CONTROLLER_PATH = "/car";
 
-    private static final String ROLE_USER_NAME = "elena_d";
+    private static final String ROLE_USER_NAME = "elena_c";
 
     private String token;
 

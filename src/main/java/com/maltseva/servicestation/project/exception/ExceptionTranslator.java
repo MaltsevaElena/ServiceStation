@@ -30,6 +30,13 @@ public class ExceptionTranslator {
         return processFieldErrors(ex, "Нельзя уменьшить пробег автомобиля", ex.getMessage());
     }
 
+    @ExceptionHandler(MailDoesNotExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleMailDoesNotExistException(MailDoesNotExistException ex) {
+        return processFieldErrors(ex, "Письмо с восстановление пароля не отправлено", ex.getMessage());
+    }
+
 
     private ErrorDTO processFieldErrors(Exception e,
                                         String error,
