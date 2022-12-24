@@ -39,11 +39,8 @@ public class JwtSecurityConfig implements WebMvcConfigurer {
             "/img/**",
             "/js/**",
             "/encode/*",
-            "/login",
             // other public endpoints of your API may be appended to this array
-            "/users/registration",
-            "/users/remember-password",
-            "/users/change-password"
+           "/user/**"
     };
     private final JwtTokenFilter jwtTokenFilter;
 
@@ -72,7 +69,6 @@ public class JwtSecurityConfig implements WebMvcConfigurer {
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .and()
                 .exceptionHandling()
-                //.accessDeniedPage() путь к странице ошибке
                 // точка доступа для аутентификации
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
@@ -81,8 +77,17 @@ public class JwtSecurityConfig implements WebMvcConfigurer {
                 .and()
                 .authorizeRequests()
                 //Доступ только для авторизованных пользователей
-                .antMatchers("/Cars/**").hasRole("user")
-                .antMatchers("/Tariffs/**").hasRole("user")
+                //Доступ для администратора для всего
+                //.antMatchers("/api/**").hasRole("ADMIN")
+                //Доступ для логиста
+                /*.antMatchers("/api/warehouse/getWarehouse").hasRole("LOGIST")
+                .antMatchers("/api/sparePart/**").hasRole("LOGIST")
+*/
+
+                //.antMatchers("/Cars/**").hasRole("user")
+                //.antMatchers("/Tariffs/**").hasRole("user")
+                .antMatchers("/**").hasRole("DIRECTOR")
+
                 //.antMatchers("/cars/**").hasAuthority("ROLE_USER")
                 //.antMatchers("/cars/**").hasAneRole("USER", "ADMIN",...)
                 .anyRequest().permitAll()
