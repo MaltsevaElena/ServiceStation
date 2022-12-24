@@ -62,7 +62,7 @@ public class ServiceStationService extends GenericService<ServiceStation, Servic
         return serviceStationRepository.save(newServiceStation);
     }
 
-    public void delete(Long objectId) throws ServiceException, MyDeleteException {
+    public void delete(Long objectId) throws MyDeleteException {
         ServiceStation serviceStation = serviceStationRepository.findById(objectId).orElseThrow(
                 () -> new NotFoundException("Service station with such id = " + objectId + " not found"));
         List<Warehouse> warehouseList = warehouseRepository.findByServiceStationId(objectId);

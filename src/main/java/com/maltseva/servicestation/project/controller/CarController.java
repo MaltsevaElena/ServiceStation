@@ -2,11 +2,11 @@ package com.maltseva.servicestation.project.controller;
 
 import com.maltseva.servicestation.project.dto.CarDTO;
 import com.maltseva.servicestation.project.dto.UserDTO;
+import com.maltseva.servicestation.project.exception.UpdateCarMileageException;
 import com.maltseva.servicestation.project.model.Car;
 import com.maltseva.servicestation.project.model.User;
 import com.maltseva.servicestation.project.service.CarService;
 import com.maltseva.servicestation.project.service.GenericService;
-import com.maltseva.servicestation.project.service.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -86,13 +86,9 @@ public class CarController extends GenericController<Car> {
     @Operation(description = "Изменить пробег автомобиля по его ID")
     @RequestMapping(value = "/updateMileageCar", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Car> updateMileageCar(@RequestParam(value = "carId") Long carId,
-                                                @RequestParam(value = "mileage") Integer mileage) throws ControllerException {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(((CarService) carService).setCarMileage(carId, mileage));
-        } catch (ServiceException e) {
-            throw new ControllerException(e);
-        }
+                                                @RequestParam(value = "mileage") Integer mileage) throws UpdateCarMileageException {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(((CarService) carService).setCarMileage(carId, mileage));
     }
 
     @Operation(description = "Изменить собственника автомобиля при его продаже, по ID автомобиля")

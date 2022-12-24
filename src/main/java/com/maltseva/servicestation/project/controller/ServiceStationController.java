@@ -101,7 +101,7 @@ public class ServiceStationController extends GenericController<ServiceStation> 
     @RequestMapping(value = "/delete",
             method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteServiceStation(
-            @RequestParam(value = "ServiceStationId") Long id) throws ControllerException, MyDeleteException, ServiceException {
+            @RequestParam(value = "ServiceStationId") Long id) throws MyDeleteException {
         ((ServiceStationService) serviceStationService).delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("СТО успешно удалено");
     }

@@ -90,7 +90,6 @@ public class UserService extends GenericService<User, UserDTO> {
         } else {
             role = roleRepository.findById(object.getRole().getId()).orElseThrow(
                     () -> new NotFoundException("User with such id = " + object.getRole().getId() + " not found"));
-            ;
         }
         user.setRole(role);
     }

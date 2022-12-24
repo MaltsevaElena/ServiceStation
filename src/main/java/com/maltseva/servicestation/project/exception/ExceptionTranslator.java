@@ -16,6 +16,21 @@ public class ExceptionTranslator {
         return processFieldErrors(ex, "Удаление невозможно", ex.getMessage());
     }
 
+    @ExceptionHandler(UpdateRoleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleUpdateRoleException(UpdateRoleException ex) {
+        return processFieldErrors(ex, "Не возможно изменить роль пользователя", ex.getMessage());
+    }
+
+    @ExceptionHandler(UpdateCarMileageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleUpdateCarMileageException(UpdateCarMileageException ex) {
+        return processFieldErrors(ex, "Нельзя уменьшить пробег автомобиля", ex.getMessage());
+    }
+
+
     private ErrorDTO processFieldErrors(Exception e,
                                         String error,
                                         String description) {

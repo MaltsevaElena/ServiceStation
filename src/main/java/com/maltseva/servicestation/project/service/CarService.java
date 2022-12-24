@@ -1,6 +1,7 @@
 package com.maltseva.servicestation.project.service;
 
 import com.maltseva.servicestation.project.dto.CarDTO;
+import com.maltseva.servicestation.project.exception.UpdateCarMileageException;
 import com.maltseva.servicestation.project.model.Car;
 import com.maltseva.servicestation.project.model.User;
 import com.maltseva.servicestation.project.repository.CarRepository;
@@ -90,14 +91,14 @@ public class CarService extends GenericService<Car, CarDTO> {
      * @param mileage
      * @return
      */
-    public Car setCarMileage(Long carId, Integer mileage) throws ServiceException {
+    public Car setCarMileage(Long carId, Integer mileage) throws UpdateCarMileageException {
         Car car = carRepository.findById(carId).orElseThrow(
                 () -> new NotFoundException("Car with such id = " + carId + " not found"));
         int oldMileage = car.getMileage();
         if (oldMileage <= mileage) {
             car.setMileage(mileage);
         } else
-            throw new ServiceException("Пробег автомобиля: " + oldMileage + " нельзя именить на меньшее значение!");
+            throw new UpdateCarMileageException("Пробег автомобиля: " + oldMileage + " нельзя именить на меньшее значение!");
 
         return carRepository.save(car);
     }
