@@ -82,10 +82,7 @@ public class JwtSecurityConfig implements WebMvcConfigurer {
                 .authorizeRequests()
                 //Доступ только для авторизованных пользователей
                 //Доступ для пользователя
-                .antMatchers("/user/updateUser").hasRole("USER")
-                .antMatchers("/user/delete").hasRole("USER")
-                .antMatchers("/user/getCarsUserById").hasRole("USER")
-                .antMatchers("/user/getUserOwnerCarDTO").hasRole("USER")
+                .antMatchers("/user/**").hasRole("USER")
                 .antMatchers("/car/**").hasRole("USER")
                 .antMatchers("/serviceBook/**").hasAnyRole("USER", "EMPLOYEE")
                 //Доступ для логиста
